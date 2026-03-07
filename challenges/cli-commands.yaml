@@ -1,0 +1,163 @@
+challenge_set: cli-commands
+title: "CLI Commands"
+challenges:
+  - id: "cli-1"
+    type: free_form
+    difficulty: medium
+    title: "Subcommands with flag Package"
+    description: |
+      Build a CLI tool with two subcommands using the standard library
+      flag package. The tool should support:
+        - "get" subcommand with a --id flag (string)
+        - "list" subcommand with a --limit flag (int, default 10)
+      Print a usage message if no subcommand is provided or if the
+      subcommand is unrecognized.
+    scaffold: |
+      package main
+
+      import (
+          "flag"
+          "fmt"
+          "os"
+      )
+
+      func main() {
+          // TODO: Create two FlagSets, one for "get" and one for "list"
+          // "get" should have a string flag --id
+          // "list" should have an int flag --limit with default 10
+
+          // TODO: Check os.Args for the subcommand (os.Args[1])
+          // Parse the appropriate FlagSet with the remaining args
+          // Print the parsed values
+
+          // TODO: Print usage if no subcommand or unknown subcommand
+      }
+    solution: |
+      package main
+
+      import (
+          "flag"
+          "fmt"
+          "os"
+      )
+
+      func main() {
+          getCmd := flag.NewFlagSet("get", flag.ExitOnError)
+          getID := getCmd.String("id", "", "resource ID to fetch")
+
+          listCmd := flag.NewFlagSet("list", flag.ExitOnError)
+          listLimit := listCmd.Int("limit", 10, "maximum number of results")
+
+          if len(os.Args) < 2 {
+              fmt.Println("expected 'get' or 'list' subcommand")
+              os.Exit(1)
+          }
+
+          switch os.Args[1] {
+          case "get":
+              getCmd.Parse(os.Args[2:])
+              fmt.Printf("fetching resource with ID: %s\n", *getID)
+          case "list":
+              listCmd.Parse(os.Args[2:])
+              fmt.Printf("listing resources with limit: %d\n", *listLimit)
+          default:
+              fmt.Printf("unknown subcommand: %s\n", os.Args[1])
+              fmt.Println("expected 'get' or 'list' subcommand")
+              os.Exit(1)
+          }
+      }
+    hints:
+      - "flag.NewFlagSet creates an independent set of flags for each subcommand"
+      - "Use os.Args[1] to determine which subcommand was invoked, then parse os.Args[2:] with that FlagSet"
+    key_concepts:
+      - "flag.NewFlagSet"
+      - "Subcommand routing"
+      - "Usage messages"
+
+  - id: "cli-2"
+    type: free_form
+    difficulty: medium
+    title: "Cobra CLI with Subcommands"
+    description: |
+      Build a CLI tool using cobra with a root command and two
+      subcommands: "serve" and "migrate". The serve command should
+      accept a --port flag (int, default 8080). The migrate command
+      should accept a --direction flag (string, "up" or "down").
+      Both commands should use RunE to return errors.
+    scaffold: |
+      package main
+
+      import (
+          "fmt"
+          "os"
+
+          "github.com/spf13/cobra"
+      )
+
+      func main() {
+          // TODO: Create a root command with Use: "myapp"
+          // and a Short description
+
+          // TODO: Create a "serve" command with a --port flag (int)
+          // that prints "starting server on port <port>"
+
+          // TODO: Create a "migrate" command with a --direction flag
+          // that prints "running migration: <direction>"
+
+          // TODO: Add both subcommands to root and execute
+      }
+    solution: |
+      package main
+
+      import (
+          "fmt"
+          "os"
+
+          "github.com/spf13/cobra"
+      )
+
+      func main() {
+          var port int
+          var direction string
+
+          rootCmd := &cobra.Command{
+              Use:   "myapp",
+              Short: "A sample CLI application",
+          }
+
+          serveCmd := &cobra.Command{
+              Use:   "serve",
+              Short: "Start the server",
+              RunE: func(cmd *cobra.Command, args []string) error {
+                  fmt.Printf("starting server on port %d\n", port)
+                  return nil
+              },
+          }
+          serveCmd.Flags().IntVar(&port, "port", 8080, "port to listen on")
+
+          migrateCmd := &cobra.Command{
+              Use:   "migrate",
+              Short: "Run database migrations",
+              RunE: func(cmd *cobra.Command, args []string) error {
+                  if direction != "up" && direction != "down" {
+                      return fmt.Errorf("direction must be 'up' or 'down', got %q", direction)
+                  }
+                  fmt.Printf("running migration: %s\n", direction)
+                  return nil
+              },
+          }
+          migrateCmd.Flags().StringVar(&direction, "direction", "up", "migration direction (up or down)")
+
+          rootCmd.AddCommand(serveCmd, migrateCmd)
+
+          if err := rootCmd.Execute(); err != nil {
+              os.Exit(1)
+          }
+      }
+    hints:
+      - "Use RunE instead of Run so your command can return an error that cobra will print"
+      - "Define flag variables before the command, then bind them with cmd.Flags().IntVar or StringVar"
+    key_concepts:
+      - "cobra.Command"
+      - "RunE vs Run"
+      - "Persistent flags"

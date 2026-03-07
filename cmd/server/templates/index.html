@@ -1,0 +1,47 @@
+{{define "content"}}
+<h1>Chapters</h1>
+
+{{if .Chapters}}
+<article style="margin-bottom: 2rem;">
+    <header><strong>All Chapters</strong></header>
+    <p>Shuffle through all {{.TotalQuestions}} questions across every chapter.</p>
+    <footer>
+        <a href="/quiz/all" role="button">Start All</a>
+    </footer>
+</article>
+
+<hr>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+    {{range .Chapters}}
+    <article>
+        <header>{{.Title}}</header>
+        <p>{{len .Questions}} questions</p>
+        <footer>
+            <a href="/chapter/{{.Slug}}" role="button" class="secondary">Start Quiz</a>
+        </footer>
+    </article>
+    {{end}}
+</div>
+{{else}}
+<p>No chapters loaded. Add YAML files to the <code>questions/</code> directory.</p>
+{{end}}
+
+{{if .ChallengeSets}}
+<hr>
+<h1>Code Challenges</h1>
+<p>Practice writing Go code by hand with Monaco Editor.</p>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+    {{range .ChallengeSets}}
+    <article>
+        <header>{{.Title}}</header>
+        <p>{{.Challenges}} challenges</p>
+        <footer>
+            <a href="/challenges/{{.Slug}}" role="button" class="contrast">Start Coding</a>
+        </footer>
+    </article>
+    {{end}}
+</div>
+{{end}}
+{{end}}

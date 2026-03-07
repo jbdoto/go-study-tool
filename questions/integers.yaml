@@ -1,0 +1,115 @@
+chapter: integers
+title: "Integers"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/integers"
+questions:
+  - id: "int-mc-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What format verb do you use in t.Errorf to print an integer?"
+    correct: "%d"
+    wrong:
+      - "%q"
+      - "%s"
+      - "%f"
+      - "%i"
+      - "%n"
+    explanation: "%d formats an integer in base 10. %q is for quoted strings, %s for unquoted strings, %f for floats."
+    source_anchor: "write-the-test-first"
+
+  - id: "int-mc-2"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is a testable example in Go and how is it named?"
+    correct: "A function starting with Example that is compiled and optionally executed during tests"
+    wrong:
+      - "A function starting with Test that prints expected output"
+      - "A function starting with Demo that is only for documentation"
+      - "A function starting with Sample that runs in a sandbox"
+      - "A special comment block that the compiler ignores"
+      - "A function starting with Benchmark that validates output"
+    explanation: "Example functions (e.g., ExampleAdd) are compiled during go test. With an // Output: comment, they are also executed and their output is validated."
+    source_anchor: "testable-examples"
+
+  - id: "int-mc-3"
+    type: multiple_choice
+    difficulty: easy
+    text: "How do you validate the output of a testable Example function?"
+    correct: "Add a comment like // Output: 6 at the end of the function"
+    wrong:
+      - "Use t.Errorf to check the result"
+      - "Return the expected value from the function"
+      - "Use assert.Equal from the testing package"
+      - "Add a // Expected: comment before the function"
+      - "Call t.Check() with the expected output"
+    explanation: "The special // Output: comment tells go test to run the example and verify its stdout matches the comment."
+    source_anchor: "testable-examples"
+
+  - id: "int-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "Why are testable examples valuable according to the chapter?"
+    correct: "They ensure documentation examples always reflect current code behavior"
+    wrong:
+      - "They run faster than regular tests"
+      - "They replace the need for unit tests"
+      - "They generate code coverage reports"
+      - "They are required by the Go compiler"
+      - "They automatically generate API documentation"
+    explanation: "Code examples in documentation can become outdated. Testable examples are verified during testing, so they stay in sync with the code."
+    source_anchor: "testable-examples"
+
+  - id: "int-mc-5"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is the shorthand for (x int, y int) in a Go function signature?"
+    correct: "(x, y int)"
+    wrong:
+      - "(int x, int y)"
+      - "(x y int)"
+      - "(x: int, y: int)"
+      - "[x, y] int"
+      - "(x int y int)"
+    explanation: "When consecutive parameters share a type, you can omit the type from all but the last: (x, y int)."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "int-mc-6"
+    type: multiple_choice
+    difficulty: medium
+    text: "What Go command lets you view package documentation offline?"
+    correct: "go doc"
+    wrong:
+      - "go help"
+      - "go info"
+      - "go man"
+      - "go readme"
+      - "go docs"
+    explanation: "go doc (e.g., go doc fmt) shows package documentation in the terminal without needing internet access."
+    source_anchor: "wrapping-up"
+
+  - id: "int-mc-7"
+    type: multiple_choice
+    difficulty: easy
+    text: "Where do function comments appear when you write them above a function definition?"
+    correct: "In Go documentation tools like godoc and in editor tooltips"
+    wrong:
+      - "Only in the source code"
+      - "In the compiled binary"
+      - "In the test output"
+      - "In the go.mod file"
+      - "In the error messages"
+    explanation: "Comments above exported functions become their documentation, visible in godoc, pkgsite, and IDE hover tooltips."
+    source_anchor: "refactor"
+
+  - id: "int-mc-8"
+    type: multiple_choice
+    difficulty: hard
+    text: "What happens if a testable Example function has no // Output: comment?"
+    correct: "It is compiled but not executed during tests"
+    wrong:
+      - "It causes a compile error"
+      - "It is executed and any output is accepted"
+      - "It is skipped entirely by the compiler"
+      - "It causes the test suite to fail"
+      - "It runs but panics at runtime"
+    explanation: "Without an // Output: comment, Example functions are still compiled (verifying they build), but their output is not checked."
+    source_anchor: "testable-examples"

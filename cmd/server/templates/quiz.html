@@ -1,0 +1,26 @@
+{{define "content"}}
+<h1>{{.Title}}</h1>
+
+<div style="margin-bottom: 1.5rem;">
+    <small>Question {{add .Index 1}} of {{.Total}}</small>
+    <progress value="{{.Index}}" max="{{.Total}}" style="width: 100%;"></progress>
+</div>
+
+<div class="question-block">
+    <h3>Question {{add .Index 1}} <span class="difficulty">{{.Question.Difficulty}}</span></h3>
+    <p>{{.Question.Text}}</p>
+    <form hx-post="{{.SubmitPath}}" hx-target="#result" hx-swap="innerHTML">
+        <input type="hidden" name="question_id" value="{{.Question.ID}}">
+        <input type="hidden" name="order" value="{{.Order}}">
+        <input type="hidden" name="i" value="{{.Index}}">
+        {{range $ci, $choice := .Choices}}
+        <label>
+            <input type="radio" name="answer" value="{{$choice}}" required>
+            {{$choice}}
+        </label>
+        {{end}}
+        <button type="submit">Check Answer</button>
+    </form>
+    <div id="result"></div>
+</div>
+{{end}}

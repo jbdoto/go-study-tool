@@ -1,0 +1,115 @@
+chapter: sync
+title: "Sync"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/sync"
+questions:
+  - id: "sync-mc-1"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does sync.Mutex provide?"
+    correct: "Mutual exclusion — only one goroutine can hold the lock at a time"
+    wrong:
+      - "A channel-based message queue"
+      - "Automatic goroutine scheduling"
+      - "A read-write lock for concurrent reads"
+      - "A semaphore with configurable capacity"
+      - "Thread-local storage for goroutines"
+    explanation: "A Mutex ensures exclusive access to shared state. Lock() acquires the lock, Unlock() releases it, and only one goroutine can hold it."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "sync-mc-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does sync.WaitGroup do?"
+    correct: "Waits for a collection of goroutines to finish by tracking a counter with Add, Done, and Wait"
+    wrong:
+      - "Groups goroutines by priority level"
+      - "Limits the number of concurrent goroutines"
+      - "Synchronizes access to shared variables"
+      - "Waits for channels to close"
+      - "Schedules goroutines in round-robin order"
+    explanation: "WaitGroup.Add(n) sets the count, each goroutine calls Done() when finished, and Wait() blocks until the count reaches zero."
+    source_anchor: "write-the-test-first"
+
+  - id: "sync-mc-3"
+    type: multiple_choice
+    difficulty: hard
+    text: "Why should you NOT embed sync.Mutex directly in a struct?"
+    correct: "It exposes Lock and Unlock as public methods, creating a leaky API"
+    wrong:
+      - "Embedded mutexes can't be locked"
+      - "Go doesn't support embedding sync types"
+      - "Embedded mutexes are slower than field mutexes"
+      - "It causes a compile error"
+      - "Embedded mutexes can't be used with defer"
+    explanation: "Embedding makes Lock/Unlock part of the struct's public API. Users shouldn't need to manage your internal locking — keep the mutex as an unexported field."
+    source_anchor: "wrapping-up"
+
+  - id: "sync-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "What happens if you copy a sync.Mutex after first use?"
+    correct: "It causes a bug — the copy has independent lock state, defeating the purpose"
+    wrong:
+      - "It panics at runtime"
+      - "It works correctly — the copy shares the lock"
+      - "It causes a compile error"
+      - "It creates a deadlock immediately"
+      - "It resets the lock to unlocked"
+    explanation: "Copying a mutex copies its internal state. go vet detects this. Always pass mutex-containing structs by pointer."
+    source_anchor: "wrapping-up"
+
+  - id: "sync-mc-5"
+    type: multiple_choice
+    difficulty: easy
+    text: "What Go tool detects mutex copying violations?"
+    correct: "go vet"
+    wrong:
+      - "go test -race"
+      - "go lint"
+      - "golangci-lint only"
+      - "go build -check"
+      - "go analyze"
+    explanation: "go vet performs static analysis and can detect issues like copying a mutex after first use, among other common mistakes."
+    source_anchor: "wrapping-up"
+
+  - id: "sync-mc-6"
+    type: multiple_choice
+    difficulty: medium
+    text: "When should you use a mutex vs a channel according to the chapter?"
+    correct: "Use mutexes for managing state; use channels for passing ownership of data"
+    wrong:
+      - "Always use channels — mutexes are deprecated"
+      - "Use mutexes for communication; channels for state"
+      - "Use channels only for buffered data"
+      - "Use mutexes only with sync.WaitGroup"
+      - "They are interchangeable — no preference"
+    explanation: "The chapter quotes Go guidance: channels are for transferring data ownership between goroutines, mutexes are for protecting shared state."
+    source_anchor: "wrapping-up"
+
+  - id: "sync-mc-7"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is the idiomatic way to unlock a mutex in Go?"
+    correct: "defer mu.Unlock() immediately after mu.Lock()"
+    wrong:
+      - "Call mu.Unlock() at the end of the function"
+      - "Use a finally block"
+      - "Let the garbage collector handle it"
+      - "Call mu.Release()"
+      - "Use mu.TryUnlock()"
+    explanation: "defer mu.Unlock() right after Lock() ensures the mutex is always released, even if the function panics or returns early."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "sync-mc-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the zero value of a sync.Mutex?"
+    correct: "An unlocked mutex, ready to use without initialization"
+    wrong:
+      - "A locked mutex"
+      - "nil — it must be created with sync.NewMutex()"
+      - "A mutex in an invalid state"
+      - "A read-locked mutex"
+      - "undefined — behavior varies by platform"
+    explanation: "sync.Mutex's zero value is an unlocked mutex. You can use it directly as a struct field without explicit initialization."
+    source_anchor: "write-enough-code-to-make-it-pass"

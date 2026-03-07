@@ -1,0 +1,115 @@
+chapter: generics
+title: "Generics"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/generics"
+questions:
+  - id: "gen-mc-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What are type parameters in Go generics?"
+    correct: "Placeholders in function or type definitions that are replaced with concrete types at use"
+    wrong:
+      - "Parameters that accept any value at runtime"
+      - "A way to pass types as function arguments at runtime"
+      - "Type aliases defined at the package level"
+      - "Parameters that are erased at compile time"
+      - "Template arguments like in C++"
+    explanation: "Type parameters like [T comparable] let you write functions and types that work with multiple concrete types while maintaining type safety."
+    source_anchor: "write-the-test-first"
+
+  - id: "gen-mc-2"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does the 'comparable' constraint mean in Go generics?"
+    correct: "The type supports == and != operators"
+    wrong:
+      - "The type implements the sort.Interface"
+      - "The type can be compared with < and >"
+      - "The type has a Compare method"
+      - "The type can be used as a map value"
+      - "The type implements the fmt.Stringer interface"
+    explanation: "comparable is a built-in constraint that allows equality comparison. Types like slices, maps, and functions are NOT comparable."
+    source_anchor: "write-the-test-first"
+
+  - id: "gen-mc-3"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does 'any' mean as a type constraint?"
+    correct: "The type parameter accepts any type — it's an alias for interface{}"
+    wrong:
+      - "The parameter must be a concrete type, not an interface"
+      - "The parameter must implement at least one method"
+      - "The parameter can only be a built-in type"
+      - "The parameter must be comparable"
+      - "The parameter must be a pointer type"
+    explanation: "any is a built-in alias for interface{}. As a constraint, it allows any type but you can't do much with it (no ==, no methods)."
+    source_anchor: "write-the-test-first"
+
+  - id: "gen-mc-4"
+    type: multiple_choice
+    difficulty: hard
+    text: "What is the difference between GenericFoo[T any](x, y T) and InterfaceyFoo(x, y interface{})?"
+    correct: "The generic version ensures x and y are the same type; the interface version allows different types"
+    wrong:
+      - "They are identical in behavior and produce the same compile-time type checks"
+      - "The generic version is slower at runtime due to type parameter instantiation overhead"
+      - "The interface version provides stronger compile-time type safety than generics"
+      - "The generic version always requires explicit type arguments at every call site"
+      - "The interface version doesn't work with custom struct types, only built-in types"
+    explanation: "With generics, T is one type — both args must match. With interface{}, x could be int and y could be string."
+    source_anchor: "write-the-test-first"
+
+  - id: "gen-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "How do you instantiate a generic Stack of integers?"
+    correct: "NewStack[int]() or Stack[int]{}"
+    wrong:
+      - "NewStack(int)"
+      - "Stack{type: int}"
+      - "Stack<int>{}"
+      - "generic.New[Stack, int]()"
+      - "Stack(int){}"
+    explanation: "Generic types require explicit type arguments in square brackets: Stack[int]{}. The compiler can't always infer the type for constructors."
+    source_anchor: "write-the-test-first"
+
+  - id: "gen-mc-6"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does 'var zero T' evaluate to in a generic function?"
+    correct: "The zero value of whatever type T is (0 for int, \"\" for string, nil for pointers)"
+    wrong:
+      - "nil regardless of the type"
+      - "A compile error — you can't declare zero values generically"
+      - "An uninitialized variable that panics on access"
+      - "The first value in the type's range"
+      - "A special sentinel value"
+    explanation: "Go's zero value concept works with generics. var zero T gives you the zero value for any type T."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "gen-mc-7"
+    type: multiple_choice
+    difficulty: medium
+    text: "When does the chapter recommend introducing generics?"
+    correct: "After identifying genuine duplication across concrete implementations backed by tests"
+    wrong:
+      - "From the start of every new project"
+      - "Whenever you have more than one type in a package"
+      - "Only when the compiler suggests it"
+      - "Before writing any concrete implementations"
+      - "Only in library code, never in application code"
+    explanation: "The chapter advises starting with concrete types and tests, then refactoring to generics only when real duplication emerges."
+    source_anchor: "wrapping-up"
+
+  - id: "gen-mc-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "Does Go require type arguments when calling a generic function?"
+    correct: "Often no — the compiler can infer T from the argument types"
+    wrong:
+      - "Always — type arguments are required for all generic calls"
+      - "Never — type arguments are only for generic types"
+      - "Only when calling from a non-generic function"
+      - "Only in test files"
+      - "Only when the return type is generic"
+    explanation: "Type inference lets you write AssertEqual(t, 1, 1) instead of AssertEqual[int](t, 1, 1) when the types are unambiguous."
+    source_anchor: "write-the-test-first"

@@ -1,0 +1,47 @@
+{{define "content"}}
+<h1>{{.SetTitle}}</h1>
+
+<div style="margin-bottom: 1.5rem;">
+    <small>Challenge {{add .Index 1}} of {{.Total}}</small>
+    <progress value="{{.Index}}" max="{{.Total}}" style="width: 100%;"></progress>
+</div>
+
+<div class="question-block">
+    <h3>{{.Challenge.Title}} <span class="difficulty">{{.Challenge.Difficulty}}</span></h3>
+    <p style="white-space: pre-wrap;">{{.Challenge.Description}}</p>
+
+    <div class="key-concepts">
+        {{range .Challenge.KeyConcepts}}<span>{{.}}</span>{{end}}
+    </div>
+
+    <script id="scaffold-data" type="application/json">{{.ScaffoldJSON}}</script>
+    <div id="editor-container"></div>
+
+    <div class="btn-group">
+        <button hx-post="/challenges/{{.SetSlug}}/check"
+                hx-target="#check-result"
+                hx-swap="innerHTML"
+                hx-vals="js:{code: window.editor ? window.editor.getValue() : ''}"
+                class="secondary">Check Syntax</button>
+        <button hx-post="/challenges/{{.SetSlug}}/hint"
+                hx-target="#hints"
+                hx-swap="beforeend"
+                hx-vals="js:{shown: document.querySelectorAll('.hint-box').length, challenge_id: '{{.Challenge.ID}}'}"
+                class="secondary outline">Show Hint</button>
+        <button hx-post="/challenges/{{.SetSlug}}/solution"
+                hx-target="#solution"
+                hx-swap="innerHTML"
+                hx-vals='{"challenge_id": "{{.Challenge.ID}}"}'
+                class="contrast outline">Show Solution</button>
+        {{if .IsLast}}
+        <a href="/" role="button">Done</a>
+        {{else}}
+        <a href="/challenges/{{.SetSlug}}/solve?order={{.Order}}&i={{add .Index 1}}" role="button">Next Challenge</a>
+        {{end}}
+    </div>
+
+    <div id="check-result"></div>
+    <div id="hints"></div>
+    <div id="solution"></div>
+</div>
+{{end}}

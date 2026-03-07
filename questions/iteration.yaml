@@ -1,0 +1,115 @@
+chapter: iteration
+title: "Iteration"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/iteration"
+questions:
+  - id: "iter-mc-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What looping constructs does Go have?"
+    correct: "Only for — there is no while, do, or until"
+    wrong:
+      - "for and while"
+      - "for, while, and do-while"
+      - "for, while, do, and until"
+      - "for and loop"
+      - "for, foreach, and while"
+    explanation: "Go has only the for keyword for all looping. You can use it as a traditional for loop, a while-style loop (for condition {}), or an infinite loop (for {})."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "iter-mc-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does the += operator do in Go?"
+    correct: "Adds the right operand to the left operand and assigns the result"
+    wrong:
+      - "Compares two values for equality"
+      - "Increments a variable by 1"
+      - "Concatenates two arrays"
+      - "Creates a new variable with the sum"
+      - "Performs a bitwise OR"
+    explanation: "+= is the 'add AND assign' operator. x += y is equivalent to x = x + y."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "iter-mc-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "Why is strings.Builder preferred over string concatenation in a loop?"
+    correct: "Strings are immutable in Go, so concatenation copies the entire string each time; Builder minimizes copying"
+    wrong:
+      - "strings.Builder is the only way to build strings in Go; concatenation is not supported"
+      - "String concatenation causes compile errors when used inside for loops in Go"
+      - "strings.Builder automatically handles Unicode encoding and normalization for you"
+      - "The Go compiler requires strings.Builder for any string operations inside loops"
+      - "strings.Builder runs its write operations in a separate goroutine for concurrency"
+    explanation: "Since Go strings are immutable, each += creates a new string. strings.Builder uses an internal buffer that grows efficiently, avoiding repeated allocations."
+    source_anchor: "refactor"
+
+  - id: "iter-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "How do you write a benchmark in Go?"
+    correct: "Create a function starting with Benchmark that takes *testing.B and uses b.Loop()"
+    wrong:
+      - "Create a function starting with Perf that takes *testing.T"
+      - "Use the go bench command with a test file"
+      - "Add a // Benchmark: comment above a test function"
+      - "Create a function starting with Speed that takes *testing.B"
+      - "Use t.Benchmark() inside a regular test"
+    explanation: "Benchmark functions start with Benchmark, accept *testing.B, and call b.Loop() (or loop b.N times) to let the framework control iterations."
+    source_anchor: "benchmarking"
+
+  - id: "iter-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "What command runs benchmarks in Go?"
+    correct: "go test -bench=."
+    wrong:
+      - "go bench ."
+      - "go test --benchmark"
+      - "go run -bench"
+      - "go test -perf=."
+      - "go benchmark ."
+    explanation: "go test -bench=. runs all benchmarks. The . is a regex matching all benchmark names. Add -benchmem for memory allocation stats."
+    source_anchor: "benchmarking"
+
+  - id: "iter-mc-6"
+    type: multiple_choice
+    difficulty: hard
+    text: "What does the ns/op metric in benchmark output mean?"
+    correct: "Nanoseconds per operation — how long each iteration took on average"
+    wrong:
+      - "Number of operations per second"
+      - "Nanoseconds of CPU time total"
+      - "Network speed per operation"
+      - "Number of system calls per operation"
+      - "Nanoseconds spent in garbage collection"
+    explanation: "ns/op shows the average time per benchmark iteration in nanoseconds. Lower is better."
+    source_anchor: "benchmarking"
+
+  - id: "iter-mc-7"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is the difference between := and var for declaring variables in Go?"
+    correct: ":= declares and initializes in one step; var declares without requiring an initial value"
+    wrong:
+      - "They are identical in all cases"
+      - ":= is for constants, var is for variables"
+      - "var can only be used inside functions"
+      - ":= creates a pointer, var creates a value"
+      - "var is deprecated in favor of :="
+    explanation: ":= is short declaration that infers type from the value. var declares a variable with its zero value and can be used without initialization."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "iter-mc-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "What flag shows memory allocation stats when running benchmarks?"
+    correct: "-benchmem"
+    wrong:
+      - "-memstats"
+      - "-allocs"
+      - "-memory"
+      - "-bench-alloc"
+      - "-showmem"
+    explanation: "go test -bench=. -benchmem shows B/op (bytes per operation) and allocs/op (allocations per operation) alongside the timing."
+    source_anchor: "benchmarking"

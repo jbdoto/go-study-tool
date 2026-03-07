@@ -1,0 +1,159 @@
+challenge_set: retry-interceptor
+title: "Retry Interceptor"
+challenges:
+  - id: "retry-1"
+    type: fill_blank
+    difficulty: medium
+    title: "Retry Policy via Service Config"
+    description: |
+      Configure a gRPC retry policy using a service config JSON string.
+      The service config allows you to define retry behavior declaratively,
+      including which status codes to retry on, maximum attempts, and
+      backoff settings. Return a grpc.DialOption that applies this config.
+    scaffold: |
+      package client
+
+      import (
+          "google.golang.org/grpc"
+      )
+
+      func RetryDialOption() grpc.DialOption {
+          // TODO: Return a grpc.WithDefaultServiceConfig dial option
+          // with a JSON service config that sets:
+          //   - methodConfig for all services/methods
+          //   - retryPolicy with maxAttempts: 3
+          //   - initialBackoff: "0.1s"
+          //   - maxBackoff: "1s"
+          //   - backoffMultiplier: 2.0
+          //   - retryableStatusCodes: ["UNAVAILABLE", "DEADLINE_EXCEEDED"]
+      }
+    solution: |
+      package client
+
+      import (
+          "google.golang.org/grpc"
+      )
+
+      func RetryDialOption() grpc.DialOption {
+          serviceConfig := `{
+              "methodConfig": [{
+                  "name": [{"service": ""}],
+                  "retryPolicy": {
+                      "maxAttempts": 3,
+                      "initialBackoff": "0.1s",
+                      "maxBackoff": "1s",
+                      "backoffMultiplier": 2.0,
+                      "retryableStatusCodes": ["UNAVAILABLE", "DEADLINE_EXCEEDED"]
+                  }
+              }]
+          }`
+          return grpc.WithDefaultServiceConfig(serviceConfig)
+      }
+    hints:
+      - "grpc.WithDefaultServiceConfig takes a JSON string, not a struct"
+      - "Use an empty service name in the name field to apply the policy to all methods"
+    key_concepts:
+      - "Service config"
+      - "Retry policy"
+      - "Max attempts and backoff"
+
+  - id: "retry-2"
+    type: fill_blank
+    difficulty: hard
+    title: "Custom Retry Interceptor with Backoff"
+    description: |
+      Implement a custom unary client interceptor that retries failed
+      RPCs with exponential backoff. The interceptor should only retry
+      on specific status codes (Unavailable and DeadlineExceeded) and
+      should respect the context deadline.
+    scaffold: |
+      package client
+
+      import (
+          "context"
+          "math"
+          "time"
+
+          "google.golang.org/grpc"
+          "google.golang.org/grpc/codes"
+          "google.golang.org/grpc/status"
+      )
+
+      func RetryUnaryInterceptor(maxRetries int, baseDelay time.Duration) grpc.UnaryClientInterceptor {
+          return func(
+              ctx context.Context,
+              method string,
+              req, reply interface{},
+              cc *grpc.ClientConn,
+              invoker grpc.UnaryInvoker,
+              opts ...grpc.CallOption,
+          ) error {
+              // TODO: Implement retry logic:
+              // 1. Attempt the RPC call up to maxRetries times
+              // 2. On failure, check if the status code is retryable
+              //    (codes.Unavailable or codes.DeadlineExceeded)
+              // 3. If retryable, wait with exponential backoff
+              //    (baseDelay * 2^attempt)
+              // 4. Respect context cancellation while waiting
+              // 5. Return the last error if all retries fail
+          }
+      }
+    solution: |
+      package client
+
+      import (
+          "context"
+          "math"
+          "time"
+
+          "google.golang.org/grpc"
+          "google.golang.org/grpc/codes"
+          "google.golang.org/grpc/status"
+      )
+
+      func RetryUnaryInterceptor(maxRetries int, baseDelay time.Duration) grpc.UnaryClientInterceptor {
+          return func(
+              ctx context.Context,
+              method string,
+              req, reply interface{},
+              cc *grpc.ClientConn,
+              invoker grpc.UnaryInvoker,
+              opts ...grpc.CallOption,
+          ) error {
+              var lastErr error
+              for attempt := 0; attempt <= maxRetries; attempt++ {
+                  lastErr = invoker(ctx, method, req, reply, cc, opts...)
+                  if lastErr == nil {
+                      return nil
+                  }
+
+                  st, ok := status.FromError(lastErr)
+                  if !ok {
+                      return lastErr
+                  }
+
+                  if st.Code() != codes.Unavailable && st.Code() != codes.DeadlineExceeded {
+                      return lastErr
+                  }
+
+                  if attempt == maxRetries {
+                      break
+                  }
+
+                  backoff := time.Duration(float64(baseDelay) * math.Pow(2, float64(attempt)))
+                  select {
+                  case <-ctx.Done():
+                      return ctx.Err()
+                  case <-time.After(backoff):
+                  }
+              }
+              return lastErr
+          }
+      }
+    hints:
+      - "Use status.FromError to extract the gRPC status code from the error"
+      - "Use select with ctx.Done() and time.After to wait while respecting cancellation"
+    key_concepts:
+      - "UnaryClientInterceptor"
+      - "Exponential backoff"
+      - "Status codes"

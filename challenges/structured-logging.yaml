@@ -1,0 +1,161 @@
+challenge_set: structured-logging
+title: "Structured Logging"
+challenges:
+  - id: "slog-1"
+    type: fill_blank
+    difficulty: easy
+    title: "slog with JSON Handler"
+    description: |
+      Set up Go's structured logging package (slog) with a JSON handler
+      and custom attributes. Configure the handler with Info level
+      minimum and set it as the default logger. Then log a message
+      with structured key-value attributes.
+    scaffold: |
+      package logging
+
+      import (
+          "log/slog"
+          "os"
+      )
+
+      func SetupLogger(serviceName string) *slog.Logger {
+          // TODO: Create a JSON handler writing to os.Stdout
+          // with minimum level set to Info
+
+          // TODO: Create a new logger with the handler
+
+          // TODO: Set it as the default logger using slog.SetDefault
+
+          // TODO: Return the logger
+      }
+
+      func LogRequest(logger *slog.Logger, method string, duration float64) {
+          // TODO: Log an info message "request completed" with
+          // structured attributes: method, duration_ms, and status="ok"
+      }
+    solution: |
+      package logging
+
+      import (
+          "log/slog"
+          "os"
+      )
+
+      func SetupLogger(serviceName string) *slog.Logger {
+          handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+              Level: slog.LevelInfo,
+          })
+
+          logger := slog.New(handler)
+          slog.SetDefault(logger)
+
+          return logger
+      }
+
+      func LogRequest(logger *slog.Logger, method string, duration float64) {
+          logger.Info("request completed",
+              "method", method,
+              "duration_ms", duration,
+              "status", "ok",
+          )
+      }
+    hints:
+      - "slog.NewJSONHandler takes an io.Writer and *slog.HandlerOptions"
+      - "Pass key-value pairs as alternating string keys and values after the message"
+    key_concepts:
+      - "slog.Handler"
+      - "JSON output"
+      - "Log levels"
+
+  - id: "slog-2"
+    type: fill_blank
+    difficulty: medium
+    title: "Logging Server Interceptor"
+    description: |
+      Create a gRPC unary server interceptor that logs request details
+      including the method name, duration, and any error status code.
+      Use slog for structured logging so the output is machine-parseable.
+    scaffold: |
+      package server
+
+      import (
+          "context"
+          "log/slog"
+          "time"
+
+          "google.golang.org/grpc"
+          "google.golang.org/grpc/status"
+      )
+
+      func LoggingInterceptor(logger *slog.Logger) grpc.UnaryServerInterceptor {
+          return func(
+              ctx context.Context,
+              req interface{},
+              info *grpc.UnaryServerInfo,
+              handler grpc.UnaryHandler,
+          ) (interface{}, error) {
+              // TODO: Record the start time
+
+              // TODO: Call the handler to process the request
+
+              // TODO: Calculate the duration
+
+              // TODO: Extract the gRPC status code from the error
+
+              // TODO: Log the method, duration, and status code
+              // Use logger.Error if there was an error,
+              // logger.Info otherwise
+          }
+      }
+    solution: |
+      package server
+
+      import (
+          "context"
+          "log/slog"
+          "time"
+
+          "google.golang.org/grpc"
+          "google.golang.org/grpc/status"
+      )
+
+      func LoggingInterceptor(logger *slog.Logger) grpc.UnaryServerInterceptor {
+          return func(
+              ctx context.Context,
+              req interface{},
+              info *grpc.UnaryServerInfo,
+              handler grpc.UnaryHandler,
+          ) (interface{}, error) {
+              start := time.Now()
+
+              resp, err := handler(ctx, req)
+
+              duration := time.Since(start)
+
+              st, _ := status.FromError(err)
+
+              if err != nil {
+                  logger.Error("rpc completed",
+                      "method", info.FullMethod,
+                      "duration_ms", duration.Milliseconds(),
+                      "code", st.Code().String(),
+                      "error", st.Message(),
+                  )
+              } else {
+                  logger.Info("rpc completed",
+                      "method", info.FullMethod,
+                      "duration_ms", duration.Milliseconds(),
+                      "code", st.Code().String(),
+                  )
+              }
+
+              return resp, err
+          }
+      }
+    hints:
+      - "Call the handler first, then log afterward so you can include the duration and result"
+      - "status.FromError extracts the gRPC status even from nil errors (returns OK)"
+    key_concepts:
+      - "Server interceptor"
+      - "Request logging"
+      - "Duration tracking"

@@ -1,0 +1,115 @@
+chapter: templating
+title: "Templating"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/html-templates"
+questions:
+  - id: "tmpl-mc-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What Go package is used for generating HTML output safely?"
+    correct: "html/template"
+    wrong:
+      - "text/template"
+      - "fmt"
+      - "html"
+      - "net/http/template"
+      - "encoding/html"
+    explanation: "html/template automatically escapes output to prevent XSS attacks. text/template is its sister package for non-HTML output."
+    source_anchor: "write-the-test-first"
+
+  - id: "tmpl-mc-2"
+    type: multiple_choice
+    difficulty: medium
+    text: "How does html/template protect against code injection?"
+    correct: "It automatically escapes HTML entities in template output"
+    wrong:
+      - "It validates all input against a whitelist"
+      - "It strips all HTML tags from output"
+      - "It runs output through a sanitizer"
+      - "It rejects templates with script tags"
+      - "It only allows plain text output"
+    explanation: "html/template escapes < to &lt;, > to &gt;, etc. by default. Use template.HTML type to explicitly mark trusted content."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "tmpl-mc-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "How do you render trusted HTML that should NOT be escaped by html/template?"
+    correct: "Wrap it in template.HTML type"
+    wrong:
+      - "Use the |safe pipe in the template"
+      - "Set template.AutoEscape = false"
+      - "Use text/template instead"
+      - "Prefix the variable with 'raw:' in the template"
+      - "Call template.Unescape() on the string"
+    explanation: "template.HTML marks a string as safe HTML. Only use this with trusted content — never with user input."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "tmpl-mc-4"
+    type: multiple_choice
+    difficulty: easy
+    text: "What template action iterates over a collection?"
+    correct: "{{range .Items}}...{{end}}"
+    wrong:
+      - "{{for .Items}}...{{end}}"
+      - "{{each .Items}}...{{end}}"
+      - "{{loop .Items}}...{{end}}"
+      - "{{iterate .Items}}...{{end}}"
+      - "{{foreach .Items}}...{{end}}"
+    explanation: "{{range}} iterates over slices, arrays, maps, and channels. Inside the block, . refers to the current element."
+    source_anchor: "write-the-test-first"
+
+  - id: "tmpl-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is a view model pattern in the context of templating?"
+    correct: "A separate struct that transforms domain data into a form suitable for rendering"
+    wrong:
+      - "A JavaScript framework for managing template state"
+      - "A model that views the database directly"
+      - "A testing pattern for visual regression"
+      - "A struct that maps 1:1 with database columns"
+      - "A global variable that templates can access"
+    explanation: "View models separate domain objects from rendering concerns. You transform data before passing it to templates, keeping templates simple."
+    source_anchor: "wrapping-up"
+
+  - id: "tmpl-mc-6"
+    type: multiple_choice
+    difficulty: hard
+    text: "Why does the chapter recommend parsing templates once at startup rather than per request?"
+    correct: "Parsing per request is ~17x slower; caching the parsed template avoids repeated work"
+    wrong:
+      - "Templates can't be parsed more than once"
+      - "The template package is not thread-safe"
+      - "Go's garbage collector can't handle frequent allocations"
+      - "Parsing requires file system access each time"
+      - "The embed package only allows one read"
+    explanation: "Benchmarks showed 53,812 ns/op parsing each time vs 3,131 ns/op with a pre-parsed template — parse once, execute many times."
+    source_anchor: "wrapping-up"
+
+  - id: "tmpl-mc-7"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is approval testing as used in the chapter?"
+    correct: "Comparing output against a saved 'approved' baseline file, reviewing diffs manually"
+    wrong:
+      - "Getting code review approval before merging tests"
+      - "Testing that requires admin approval to run"
+      - "A pattern where stakeholders approve test cases"
+      - "Testing only approved/whitelisted inputs"
+      - "Running tests that need manual visual verification"
+    explanation: "Approval tests save output to a file. When output changes, you review the diff and 'approve' it by updating the baseline."
+    source_anchor: "write-the-test-first"
+
+  - id: "tmpl-mc-8"
+    type: multiple_choice
+    difficulty: easy
+    text: "How do you access a struct field in a Go template?"
+    correct: "{{.FieldName}}"
+    wrong:
+      - "{{FieldName}}"
+      - "${FieldName}"
+      - "{{self.FieldName}}"
+      - "{{this.FieldName}}"
+      - "<%=FieldName%>"
+    explanation: "In Go templates, . refers to the current data context. .FieldName accesses a field on the struct passed to Execute."
+    source_anchor: "write-the-test-first"

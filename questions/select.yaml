@@ -1,0 +1,115 @@
+chapter: select
+title: "Select"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/select"
+questions:
+  - id: "sel-mc-1"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does a select statement do in Go?"
+    correct: "Waits on multiple channel operations and executes whichever case receives a value first"
+    wrong:
+      - "Chooses between multiple function return values"
+      - "Selects a random goroutine to execute"
+      - "Filters elements from a slice based on a condition"
+      - "Switches between different interface implementations"
+      - "Picks the fastest HTTP response from a list"
+    explanation: "select lets you wait on multiple channels simultaneously. The first case to receive a value 'wins' and its code block executes."
+    source_anchor: "select"
+
+  - id: "sel-mc-2"
+    type: multiple_choice
+    difficulty: medium
+    text: "What type of channel is used for signaling without sending data?"
+    correct: "chan struct{} — a channel of empty structs (zero memory allocation)"
+    wrong:
+      - "chan bool — send true to signal"
+      - "chan nil — a special nil channel"
+      - "chan int — send 0 to signal"
+      - "chan signal — from the os/signal package"
+      - "chan void — Go's void channel type"
+    explanation: "chan struct{} is idiomatic for pure signaling. struct{} takes zero bytes, and you signal by closing the channel rather than sending a value."
+    source_anchor: "select"
+
+  - id: "sel-mc-3"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does the defer keyword do in Go?"
+    correct: "Schedules a function call to execute when the surrounding function returns"
+    wrong:
+      - "Delays execution for a specified duration"
+      - "Runs a function in a background goroutine"
+      - "Prevents a function from being garbage collected"
+      - "Marks a function as deprecated"
+      - "Retries a function if it returns an error"
+    explanation: "defer is typically used for cleanup: defer server.Close() ensures the server is shut down when the test function exits."
+    source_anchor: "write-the-test-first"
+
+  - id: "sel-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "How do you add a timeout to a select statement?"
+    correct: "Add a case with <-time.After(duration)"
+    wrong:
+      - "Set a timeout field on the select statement"
+      - "Wrap the select in a context.WithTimeout"
+      - "Use select.Timeout(duration)"
+      - "Add a default case with time.Sleep"
+      - "Use the -timeout flag when running tests"
+    explanation: "time.After returns a channel that receives a value after the duration, making it a natural timeout case in a select."
+    source_anchor: "select"
+
+  - id: "sel-mc-5"
+    type: multiple_choice
+    difficulty: easy
+    text: "What package provides mock HTTP servers for testing?"
+    correct: "net/http/httptest"
+    wrong:
+      - "testing/http"
+      - "net/http/mock"
+      - "httptest (standalone package)"
+      - "net/http/testing"
+      - "mock/http"
+    explanation: "httptest.NewServer creates a real HTTP server on localhost for testing, letting you control responses without external dependencies."
+    source_anchor: "write-the-test-first"
+
+  - id: "sel-mc-6"
+    type: multiple_choice
+    difficulty: hard
+    text: "Why does the chapter use close(ch) instead of ch <- struct{}{} to signal completion?"
+    correct: "Closing a channel unblocks all receivers, while sending only unblocks one"
+    wrong:
+      - "close() is faster than sending a value"
+      - "You can't send struct{}{} on a channel"
+      - "close() prevents goroutine leaks"
+      - "Sending on a channel requires a buffer"
+      - "close() is required for select to work"
+    explanation: "Closing a channel causes all pending receives to complete immediately with the zero value, making it a broadcast signal."
+    source_anchor: "select"
+
+  - id: "sel-mc-7"
+    type: multiple_choice
+    difficulty: medium
+    text: "What happens if you declare a channel with var but don't initialize it with make?"
+    correct: "The channel is nil and will block forever on send and receive"
+    wrong:
+      - "It creates a buffered channel with capacity 1"
+      - "It causes a compile error"
+      - "It creates an unbuffered channel"
+      - "It panics at runtime when used"
+      - "It returns zero values immediately on receive"
+    explanation: "A nil channel blocks on all operations. Always use make(chan Type) to create a usable channel."
+    source_anchor: "select"
+
+  - id: "sel-mc-8"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does httptest.NewServer return?"
+    correct: "A *httptest.Server with a URL field pointing to the local test server"
+    wrong:
+      - "A mock HTTP client"
+      - "A URL string"
+      - "An http.Handler"
+      - "A net.Listener"
+      - "A *http.Request"
+    explanation: "httptest.NewServer starts a real local server. Use server.URL to get its address and defer server.Close() for cleanup."
+    source_anchor: "write-the-test-first"

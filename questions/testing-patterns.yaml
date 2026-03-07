@@ -1,0 +1,107 @@
+chapter: testing-patterns
+title: "Testing Patterns"
+source_url: "https://pkg.go.dev/testing"
+questions:
+  - id: "test-pat-1"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is bufconn used for in gRPC testing?"
+    correct: "Creating an in-memory network connection so gRPC client and server communicate without real network I/O"
+    wrong:
+      - "Buffering gRPC responses in memory so they can be replayed during integration testing"
+      - "Recording gRPC traffic to a file for later analysis and regression test generation"
+      - "Mocking the protobuf serialization layer to test handlers without real encoding"
+      - "Creating a managed connection pool that distributes RPCs across parallel test workers"
+      - "Compressing gRPC messages in test environments to reduce memory usage and speed up tests"
+    explanation: "google.golang.org/grpc/test/bufconn provides an in-memory listener. Tests create a real gRPC server and client that communicate through memory, making tests fast and port-free."
+
+  - id: "test-pat-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is the table-driven test pattern in Go?"
+    correct: "Defining test cases in a slice of structs and iterating over them with t.Run subtests"
+    wrong:
+      - "Using a database table to store test inputs and expected outputs"
+      - "Testing database table operations like insert and delete"
+      - "Generating tests from a CSV file"
+      - "A pattern where each test function tests one table in a schema"
+      - "Running tests in a specific order defined in a configuration table"
+    explanation: "Table-driven tests define cases as []struct{name, input, expected} and loop with t.Run(tc.name, ...). This reduces boilerplate and makes adding test cases trivial."
+
+  - id: "test-pat-3"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does t.Helper() do in a Go test?"
+    correct: "Marks the calling function as a test helper so failures report the caller's line number instead"
+    wrong:
+      - "Creates a helper goroutine that runs alongside the test for background work"
+      - "Provides built-in utility functions like assertions and comparisons"
+      - "Skips the test automatically if required helper dependencies are unavailable"
+      - "Runs the test in a separate helper process for complete isolation"
+      - "Generates boilerplate helper code for common test patterns automatically"
+    explanation: "When a function calls t.Helper(), any t.Fatal or t.Error from that function will report the file and line of the caller, not the helper itself, making error messages more useful."
+
+  - id: "test-pat-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does t.Cleanup() do?"
+    correct: "Registers a function to be called when the test (or subtest) finishes, for teardown"
+    wrong:
+      - "Removes temporary files created during the test"
+      - "Resets all package-level variables to their initial state"
+      - "Cancels all goroutines started during the test"
+      - "Clears the test output buffer"
+      - "Rolls back database transactions from the test"
+    explanation: "t.Cleanup(func()) registers teardown functions that run after the test completes, even if it fails. Multiple cleanup functions run in LIFO order, like defer."
+
+  - id: "test-pat-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "How do you mock dependencies in Go without a mocking framework?"
+    correct: "Define interfaces for dependencies and pass test implementations that satisfy those interfaces"
+    wrong:
+      - "Use reflection to dynamically replace function implementations at runtime during tests"
+      - "Use build tags to conditionally swap implementations between production and test builds"
+      - "Override package-level variables with test doubles that record their interactions"
+      - "Use monkey-patching via unsafe pointers to replace methods on struct instances"
+      - "Use the go:generate directive to automatically create mock files from interfaces"
+    explanation: "Go's interface-based design makes mocking natural: accept an interface, and in tests pass a struct that implements it with test-specific behavior. No framework required."
+
+  - id: "test-pat-6"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does httptest.NewServer do?"
+    correct: "Creates a real HTTP server on a random local port for testing HTTP clients"
+    wrong:
+      - "Creates a mock HTTP server that records all requests without processing them"
+      - "Starts an HTTP server using configuration defined in a test fixture file"
+      - "Creates an in-memory HTTP server that doesn't actually bind to a port"
+      - "Validates HTTP handler implementations against a set of predefined test cases"
+      - "Generates HTTP test fixtures and mock responses from OpenAPI specifications"
+    explanation: "httptest.NewServer(handler) starts an actual HTTP server on localhost with a random port. Use its URL field to point your HTTP client at it. Call Close() when done."
+
+  - id: "test-pat-7"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does t.Parallel() do?"
+    correct: "Marks a test as safe to run in parallel with other parallel tests"
+    wrong:
+      - "Runs the test multiple times concurrently to detect race conditions"
+      - "Splits the test into parallel subtests automatically"
+      - "Runs the test on multiple CPU cores"
+      - "Parallelizes assertions within the test"
+      - "Runs the test suite across multiple machines"
+    explanation: "t.Parallel() signals the test runner that this test can run concurrently with other tests that also call t.Parallel(). It pauses the test until all non-parallel tests in the suite complete."
+
+  - id: "test-pat-8"
+    type: multiple_choice
+    difficulty: hard
+    text: "What is an advantage of using Go's standard testing assertions (if/t.Errorf) over testify assertions?"
+    correct: "No external dependency, and error messages can be customized to be more descriptive"
+    wrong:
+      - "Standard assertions are faster at runtime because they avoid reflection overhead"
+      - "Standard assertions support generics natively while testify does not yet"
+      - "Standard assertions produce better stack traces with more accurate line numbers"
+      - "Standard assertions work correctly with t.Parallel() while testify does not"
+      - "Standard assertions are required for the go test -race detector to function"
+    explanation: "Using if + t.Errorf keeps your tests dependency-free and lets you write precise error messages. Testify adds convenience methods like assert.Equal but adds a dependency and can produce less descriptive default messages."

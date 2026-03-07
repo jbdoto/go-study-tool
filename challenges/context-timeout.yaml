@@ -1,0 +1,137 @@
+challenge_set: context-timeout
+title: "Context & Timeout"
+challenges:
+  - id: "ctx-1"
+    type: fill_blank
+    difficulty: easy
+    title: "Timeout for Unary RPC"
+    description: |
+      Add a timeout to a gRPC unary call using context.WithTimeout.
+      When making RPC calls, you should always set a deadline to prevent
+      calls from hanging indefinitely. The timeout context must be
+      cancelled when done to avoid resource leaks.
+    scaffold: |
+      package client
+
+      import (
+          "context"
+          "time"
+
+          pb "example.com/api/proto"
+          "google.golang.org/grpc"
+      )
+
+      func GetUser(client pb.UserServiceClient, userID string) (*pb.User, error) {
+          // TODO: Create a context with a 5-second timeout
+          // Don't forget to defer the cancel function
+
+          // TODO: Make the GetUser RPC call with the timeout context
+          req := &pb.GetUserRequest{UserId: userID}
+
+          // TODO: Return the response and error
+      }
+    solution: |
+      package client
+
+      import (
+          "context"
+          "time"
+
+          pb "example.com/api/proto"
+          "google.golang.org/grpc"
+      )
+
+      func GetUser(client pb.UserServiceClient, userID string) (*pb.User, error) {
+          ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+          defer cancel()
+
+          req := &pb.GetUserRequest{UserId: userID}
+          resp, err := client.GetUser(ctx, req)
+          if err != nil {
+              return nil, err
+          }
+          return resp, nil
+      }
+    hints:
+      - "context.WithTimeout returns both a context and a cancel function"
+      - "Always defer cancel() immediately after creating the timeout context"
+    key_concepts:
+      - "context.WithTimeout"
+      - "Deadline propagation"
+      - "Cancel function"
+
+  - id: "ctx-2"
+    type: fill_blank
+    difficulty: medium
+    title: "Sequential RPCs with Cancellation"
+    description: |
+      Implement a helper that makes sequential RPC calls while respecting
+      parent context cancellation. If the context is cancelled between
+      calls, the function should return immediately rather than starting
+      the next RPC. This pattern is common when orchestrating multiple
+      backend calls.
+    scaffold: |
+      package client
+
+      import (
+          "context"
+          "fmt"
+
+          pb "example.com/api/proto"
+      )
+
+      func GetUserWithOrders(
+          ctx context.Context,
+          userClient pb.UserServiceClient,
+          orderClient pb.OrderServiceClient,
+          userID string,
+      ) (*pb.User, []*pb.Order, error) {
+          // TODO: Make the GetUser RPC call
+          // Check for errors before proceeding
+
+          // TODO: Before making the next call, check if the context
+          // has been cancelled using ctx.Err()
+          // Return early if cancelled
+
+          // TODO: Make the ListOrders RPC call using the user's ID
+          // Return the user and orders
+      }
+    solution: |
+      package client
+
+      import (
+          "context"
+          "fmt"
+
+          pb "example.com/api/proto"
+      )
+
+      func GetUserWithOrders(
+          ctx context.Context,
+          userClient pb.UserServiceClient,
+          orderClient pb.OrderServiceClient,
+          userID string,
+      ) (*pb.User, []*pb.Order, error) {
+          user, err := userClient.GetUser(ctx, &pb.GetUserRequest{UserId: userID})
+          if err != nil {
+              return nil, nil, fmt.Errorf("get user: %w", err)
+          }
+
+          if err := ctx.Err(); err != nil {
+              return nil, nil, fmt.Errorf("context cancelled before listing orders: %w", err)
+          }
+
+          orders, err := orderClient.ListOrders(ctx, &pb.ListOrdersRequest{UserId: user.Id})
+          if err != nil {
+              return nil, nil, fmt.Errorf("list orders: %w", err)
+          }
+
+          return user, orders.Orders, nil
+      }
+    hints:
+      - "ctx.Err() returns non-nil if the context has been cancelled or its deadline exceeded"
+      - "Check ctx.Err() between sequential RPC calls to fail fast on cancellation"
+    key_concepts:
+      - "Context cancellation"
+      - "ctx.Err()"
+      - "Sequential RPC calls"

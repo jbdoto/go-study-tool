@@ -1,0 +1,190 @@
+challenge_set: grpc-client-connection
+title: "gRPC Client Connection"
+challenges:
+  - id: "grpc-conn-1"
+    type: fill_blank
+    difficulty: medium
+    title: "TLS Connection with Keepalive"
+    description: |
+      Set up a gRPC client connection with TLS credentials and keepalive
+      parameters. You need to create TLS transport credentials from a
+      certificate file, configure keepalive settings to maintain the
+      connection, and dial the server with these options.
+    scaffold: |
+      package client
+
+      import (
+          "crypto/tls"
+          "time"
+
+          "google.golang.org/grpc"
+          "google.golang.org/grpc/credentials"
+          "google.golang.org/grpc/keepalive"
+      )
+
+      func NewGRPCConnection(addr string) (*grpc.ClientConn, error) {
+          // TODO: Create TLS credentials using a tls.Config
+          // with the system certificate pool
+
+          // TODO: Configure keepalive parameters with:
+          //   - Time: 10 seconds
+          //   - Timeout: 3 seconds
+          //   - PermitWithoutStream: true
+
+          // TODO: Dial the server with TLS credentials and keepalive params
+          // Return the connection and any error
+      }
+    solution: |
+      package client
+
+      import (
+          "crypto/tls"
+          "time"
+
+          "google.golang.org/grpc"
+          "google.golang.org/grpc/credentials"
+          "google.golang.org/grpc/keepalive"
+      )
+
+      func NewGRPCConnection(addr string) (*grpc.ClientConn, error) {
+          tlsConfig := &tls.Config{}
+          creds := credentials.NewTLS(tlsConfig)
+
+          kaParams := keepalive.ClientParameters{
+              Time:                10 * time.Second,
+              Timeout:             3 * time.Second,
+              PermitWithoutStream: true,
+          }
+
+          conn, err := grpc.Dial(addr,
+              grpc.WithTransportCredentials(creds),
+              grpc.WithKeepaliveParams(kaParams),
+          )
+          if err != nil {
+              return nil, err
+          }
+
+          return conn, nil
+      }
+    hints:
+      - "Use credentials.NewTLS with a *tls.Config to create transport credentials"
+      - "keepalive.ClientParameters has Time, Timeout, and PermitWithoutStream fields"
+    key_concepts:
+      - "grpc.Dial options"
+      - "TLS transport credentials"
+      - "Keepalive configuration"
+
+  - id: "grpc-conn-2"
+    type: fill_blank
+    difficulty: medium
+    title: "Client Interceptors"
+    description: |
+      Add unary and stream interceptors to a gRPC client connection.
+      Interceptors let you add cross-cutting concerns like logging,
+      metrics, or authentication to every RPC call without modifying
+      individual handlers. Chain multiple interceptors together so
+      they execute in order.
+    scaffold: |
+      package client
+
+      import (
+          "context"
+          "log"
+          "time"
+
+          "google.golang.org/grpc"
+      )
+
+      func loggingUnaryInterceptor(
+          ctx context.Context,
+          method string,
+          req, reply interface{},
+          cc *grpc.ClientConn,
+          invoker grpc.UnaryInvoker,
+          opts ...grpc.CallOption,
+      ) error {
+          start := time.Now()
+          err := invoker(ctx, method, req, reply, cc, opts...)
+          log.Printf("unary call %s took %v", method, time.Since(start))
+          return err
+      }
+
+      func metricsUnaryInterceptor(
+          ctx context.Context,
+          method string,
+          req, reply interface{},
+          cc *grpc.ClientConn,
+          invoker grpc.UnaryInvoker,
+          opts ...grpc.CallOption,
+      ) error {
+          err := invoker(ctx, method, req, reply, cc, opts...)
+          // record metrics here
+          return err
+      }
+
+      func NewInterceptedConnection(addr string) (*grpc.ClientConn, error) {
+          // TODO: Create a gRPC client connection with chained unary
+          // interceptors (logging first, then metrics) and chained
+          // stream interceptors using grpc.Dial
+
+          // Use grpc.WithInsecure() for this example
+      }
+    solution: |
+      package client
+
+      import (
+          "context"
+          "log"
+          "time"
+
+          "google.golang.org/grpc"
+      )
+
+      func loggingUnaryInterceptor(
+          ctx context.Context,
+          method string,
+          req, reply interface{},
+          cc *grpc.ClientConn,
+          invoker grpc.UnaryInvoker,
+          opts ...grpc.CallOption,
+      ) error {
+          start := time.Now()
+          err := invoker(ctx, method, req, reply, cc, opts...)
+          log.Printf("unary call %s took %v", method, time.Since(start))
+          return err
+      }
+
+      func metricsUnaryInterceptor(
+          ctx context.Context,
+          method string,
+          req, reply interface{},
+          cc *grpc.ClientConn,
+          invoker grpc.UnaryInvoker,
+          opts ...grpc.CallOption,
+      ) error {
+          err := invoker(ctx, method, req, reply, cc, opts...)
+          // record metrics here
+          return err
+      }
+
+      func NewInterceptedConnection(addr string) (*grpc.ClientConn, error) {
+          conn, err := grpc.Dial(addr,
+              grpc.WithInsecure(),
+              grpc.WithChainUnaryInterceptor(
+                  loggingUnaryInterceptor,
+                  metricsUnaryInterceptor,
+              ),
+              grpc.WithChainStreamInterceptor(),
+          )
+          if err != nil {
+              return nil, err
+          }
+          return conn, nil
+      }
+    hints:
+      - "Use grpc.WithChainUnaryInterceptor to chain multiple unary interceptors in order"
+      - "Use grpc.WithChainStreamInterceptor for stream interceptors - it works the same way"
+    key_concepts:
+      - "Unary interceptors"
+      - "Stream interceptors"
+      - "Interceptor chaining"

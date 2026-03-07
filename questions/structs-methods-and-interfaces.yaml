@@ -1,0 +1,143 @@
+chapter: structs-methods-and-interfaces
+title: "Structs, Methods & Interfaces"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/structs-methods-and-interfaces"
+questions:
+  - id: "smi-mc-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is a struct in Go?"
+    correct: "A named collection of fields where you can store data"
+    wrong:
+      - "A function that returns multiple values"
+      - "An interface with default implementations"
+      - "A package-level variable"
+      - "A type alias for a map"
+      - "A built-in error type"
+    explanation: "Structs group related data together. For example, Rectangle{Width: 12, Height: 6} stores two float64 fields."
+    source_anchor: "write-the-test-first"
+
+  - id: "smi-mc-2"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the syntax for defining a method on a type in Go?"
+    correct: "func (receiverName ReceiverType) MethodName() ReturnType"
+    wrong:
+      - "func ReceiverType.MethodName() ReturnType"
+      - "func MethodName(self ReceiverType) ReturnType"
+      - "ReceiverType.func MethodName() ReturnType"
+      - "method (ReceiverType) MethodName() ReturnType"
+      - "def ReceiverType::MethodName() ReturnType"
+    explanation: "Methods in Go use a receiver parameter before the method name: func (r Rectangle) Area() float64 { ... }"
+    source_anchor: "what-are-methods"
+
+  - id: "smi-mc-3"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is the Go convention for naming a method receiver variable?"
+    correct: "The first letter of the type name (e.g., r for Rectangle, c for Circle)"
+    wrong:
+      - "Always use 'self'"
+      - "Always use 'this'"
+      - "The full type name in lowercase"
+      - "Always use 'receiver'"
+      - "Any single letter like x or y"
+    explanation: "Go convention uses the first letter: func (r Rectangle) Area(), func (c Circle) Area(). This keeps it concise."
+    source_anchor: "what-are-methods"
+
+  - id: "smi-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "How does a type satisfy an interface in Go?"
+    correct: "Implicitly — by implementing all methods the interface requires, with no explicit declaration"
+    wrong:
+      - "By using the 'implements' keyword"
+      - "By registering the type with the interface at runtime"
+      - "By embedding the interface in the struct"
+      - "By adding a comment annotation above the type"
+      - "By importing the interface's package"
+    explanation: "Go interfaces are satisfied implicitly. If a type has all the methods an interface requires, it satisfies that interface — no 'implements' keyword needed."
+    source_anchor: "decoupling"
+
+  - id: "smi-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is a table-driven test in Go?"
+    correct: "A test that iterates over a slice of test cases, running each as a subtest with t.Run"
+    wrong:
+      - "A test that reads input from a database table"
+      - "A test that generates an HTML table of results"
+      - "A test that runs against multiple database backends"
+      - "A test that compares function output to a CSV file"
+      - "A test framework imported from a third-party package"
+    explanation: "Table-driven tests define cases as a slice of structs and loop over them with t.Run, making it easy to add new cases and see which one fails."
+    source_anchor: "table-driven-tests"
+
+  - id: "smi-mc-6"
+    type: multiple_choice
+    difficulty: hard
+    text: "What does the %#v format verb show when printing a struct in a test failure message?"
+    correct: "The struct with its type name and field names/values (e.g., main.Rectangle{Width:12, Height:6})"
+    wrong:
+      - "Only the field values without field names (e.g., {12, 6} for a Rectangle)"
+      - "The memory address of the struct as a hexadecimal pointer value"
+      - "The struct serialized as a JSON string with quoted field names"
+      - "The total size of the struct in bytes including padding and alignment"
+      - "Only the type name without any field values (e.g., main.Rectangle)"
+    explanation: "%#v prints a Go-syntax representation of the value, which for structs includes the type and all field names with values — very helpful for debugging."
+    source_anchor: "make-sure-your-test-output-is-helpful"
+
+  - id: "smi-mc-7"
+    type: multiple_choice
+    difficulty: easy
+    text: "What format verb gives you precise float64 output like 314.1592653589793?"
+    correct: "%g"
+    wrong:
+      - "%f"
+      - "%d"
+      - "%e"
+      - "%p"
+      - "%v"
+    explanation: "%g uses the shortest representation that doesn't lose precision. %f defaults to 6 decimal places which may truncate."
+    source_anchor: "further-refactoring"
+
+  - id: "smi-mc-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "What Go package provides the value of Pi?"
+    correct: "math (as math.Pi)"
+    wrong:
+      - "fmt (as fmt.Pi)"
+      - "constants (as constants.Pi)"
+      - "numbers (as numbers.Pi)"
+      - "builtin (as builtin.Pi)"
+      - "pi (as pi.Value)"
+    explanation: "math.Pi is the constant for pi in Go's standard library math package."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "smi-mc-9"
+    type: multiple_choice
+    difficulty: hard
+    text: "What is the benefit of accepting an interface rather than a concrete type in a function?"
+    correct: "It decouples the function from specific implementations, allowing any type that satisfies the interface"
+    wrong:
+      - "Interfaces are faster than concrete types at runtime"
+      - "Interfaces use less memory than structs"
+      - "Go requires all function parameters to be interfaces"
+      - "Interfaces prevent nil pointer errors"
+      - "Interfaces automatically generate documentation"
+    explanation: "Accepting an interface means your function works with any type that has the required methods, enabling polymorphism and easier testing."
+    source_anchor: "decoupling"
+
+  - id: "smi-mc-10"
+    type: multiple_choice
+    difficulty: medium
+    text: "How do you define an anonymous struct in a table-driven test?"
+    correct: "[]struct{ name string; shape Shape; hasArea float64 }{{...}, {...}}"
+    wrong:
+      - "[]map[string]interface{}{{...}, {...}}"
+      - "[]testCase{{...}, {...}} with type testCase = struct"
+      - "[]any{{...}, {...}}"
+      - "[]tuple{string, Shape, float64}{{...}, {...}}"
+      - "[]record{ name, shape, hasArea }{{...}, {...}}"
+    explanation: "Anonymous structs are defined inline — you specify the struct fields and values directly without naming the type, which is concise for test cases."
+    source_anchor: "table-driven-tests"

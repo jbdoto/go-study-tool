@@ -1,0 +1,107 @@
+chapter: context-and-cancellation
+title: "Context & Cancellation"
+source_url: "https://pkg.go.dev/context"
+questions:
+  - id: "ctx-cancel-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is the difference between context.WithTimeout and context.WithDeadline?"
+    correct: "WithTimeout takes a duration, WithDeadline takes an absolute time"
+    wrong:
+      - "WithTimeout is for HTTP requests, WithDeadline is for gRPC"
+      - "WithTimeout cancels gracefully, WithDeadline cancels immediately"
+      - "They are aliases for the same function"
+      - "WithDeadline can be extended, WithTimeout cannot"
+      - "WithTimeout blocks until expiry, WithDeadline returns immediately"
+    explanation: "WithTimeout(ctx, 5*time.Second) is equivalent to WithDeadline(ctx, time.Now().Add(5*time.Second)). They differ only in how you specify when cancellation occurs."
+
+  - id: "ctx-cancel-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does context.WithCancel return?"
+    correct: "A derived context and a CancelFunc"
+    wrong:
+      - "Only a new context"
+      - "A context and an error"
+      - "A context and a done channel"
+      - "A context and a boolean"
+      - "A context and a WaitGroup"
+    explanation: "context.WithCancel(parent) returns (ctx, cancel). Calling cancel() cancels ctx and all contexts derived from it."
+
+  - id: "ctx-cancel-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "When should you use context.WithValue?"
+    correct: "For request-scoped metadata like trace IDs, not for passing function parameters"
+    wrong:
+      - "For passing database connections and transaction handles to handlers"
+      - "For storing user session data that persists throughout the application"
+      - "For passing configuration values to all downstream function calls"
+      - "Whenever you want to avoid adding extra parameters to function signatures"
+      - "For caching and sharing expensive computation results across functions"
+    explanation: "context.WithValue is for request-scoped data that transits process boundaries (trace IDs, auth tokens). Required dependencies should be explicit function parameters."
+
+  - id: "ctx-cancel-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "How does gRPC propagate context deadlines across service boundaries?"
+    correct: "The deadline is encoded in gRPC metadata and reconstructed on the server side"
+    wrong:
+      - "Each service sets its own independent deadline based on local configuration"
+      - "The client sends a separate deadline RPC before the actual call begins"
+      - "Deadlines only apply to the first hop and are not propagated further"
+      - "The deadline is stored as a field in the Protocol Buffers message body"
+      - "A shared distributed clock service synchronizes deadlines across services"
+    explanation: "gRPC automatically propagates deadlines via the grpc-timeout header in metadata. The server reconstructs a context with the remaining time, so the entire call chain respects the original deadline."
+
+  - id: "ctx-cancel-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does ctx.Err() return after a context is cancelled via its cancel function?"
+    correct: "context.Canceled"
+    wrong:
+      - "context.DeadlineExceeded"
+      - "nil"
+      - "context.Timeout"
+      - "io.EOF"
+      - "context.Done"
+    explanation: "ctx.Err() returns context.Canceled when the context was explicitly cancelled, and context.DeadlineExceeded when a deadline or timeout expired."
+
+  - id: "ctx-cancel-6"
+    type: multiple_choice
+    difficulty: hard
+    text: "What happens if you call context.WithValue with a key type that is an exported string type?"
+    correct: "It risks collisions with other packages using the same key; unexported key types are recommended"
+    wrong:
+      - "It panics at runtime because exported types cannot be used as context keys"
+      - "The compiler rejects it with a type safety error during compilation"
+      - "It works perfectly with no downsides as long as key strings are unique"
+      - "The value becomes read-only and cannot be overwritten by child contexts"
+      - "The value is automatically serialized to the wire when crossing process boundaries"
+    explanation: "Using unexported types as context keys prevents collisions between packages. A common pattern is: type contextKey struct{} and then using contextKey{} as the key."
+
+  - id: "ctx-cancel-7"
+    type: multiple_choice
+    difficulty: easy
+    text: "When should you use context.TODO() instead of context.Background()?"
+    correct: "When you are unsure which context to use and plan to refactor later"
+    wrong:
+      - "When you need a context with a default 30-second timeout"
+      - "When running tests that need a mock context"
+      - "When you want a context that logs all operations"
+      - "When creating contexts in init() functions"
+      - "When the context will be used in a goroutine"
+    explanation: "context.TODO() signals intent to add proper context handling later. context.Background() is for top-level/main-function contexts where no parent context exists."
+
+  - id: "ctx-cancel-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "Why should context.Context always be the first parameter of a function?"
+    correct: "It is a Go convention established by the standard library for consistency"
+    wrong:
+      - "The compiler requires it to be the first parameter"
+      - "Context must be first so the garbage collector can track it"
+      - "It must be first for gRPC code generation to work"
+      - "It allows the runtime to optimize cancellation checks"
+      - "It is required by the context package's type system"
+    explanation: "This is a widely adopted convention in Go, documented in the context package itself: 'Do not store Contexts inside a struct type; instead, pass a Context explicitly to each function that needs it, as the first parameter.'"

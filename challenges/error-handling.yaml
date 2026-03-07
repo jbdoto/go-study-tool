@@ -1,0 +1,164 @@
+challenge_set: error-handling
+title: "Error Handling"
+challenges:
+  - id: "err-1"
+    type: fill_blank
+    difficulty: easy
+    title: "Application Errors to gRPC Status"
+    description: |
+      Convert application-level errors to gRPC status errors with
+      appropriate status codes. Map common error types (not found,
+      validation, permission denied) to their corresponding gRPC codes
+      so clients receive meaningful error information.
+    scaffold: |
+      package server
+
+      import (
+          "errors"
+
+          "google.golang.org/grpc/codes"
+          "google.golang.org/grpc/status"
+      )
+
+      var (
+          ErrNotFound   = errors.New("resource not found")
+          ErrInvalidArg = errors.New("invalid argument")
+          ErrForbidden  = errors.New("permission denied")
+      )
+
+      func ToGRPCError(err error) error {
+          if err == nil {
+              return nil
+          }
+
+          // TODO: Check if err matches ErrNotFound and return
+          // a gRPC status error with codes.NotFound
+
+          // TODO: Check if err matches ErrInvalidArg and return
+          // a gRPC status error with codes.InvalidArgument
+
+          // TODO: Check if err matches ErrForbidden and return
+          // a gRPC status error with codes.PermissionDenied
+
+          // TODO: Return codes.Internal for any unrecognized error
+      }
+    solution: |
+      package server
+
+      import (
+          "errors"
+
+          "google.golang.org/grpc/codes"
+          "google.golang.org/grpc/status"
+      )
+
+      var (
+          ErrNotFound   = errors.New("resource not found")
+          ErrInvalidArg = errors.New("invalid argument")
+          ErrForbidden  = errors.New("permission denied")
+      )
+
+      func ToGRPCError(err error) error {
+          if err == nil {
+              return nil
+          }
+
+          if errors.Is(err, ErrNotFound) {
+              return status.Errorf(codes.NotFound, "not found: %v", err)
+          }
+
+          if errors.Is(err, ErrInvalidArg) {
+              return status.Errorf(codes.InvalidArgument, "invalid argument: %v", err)
+          }
+
+          if errors.Is(err, ErrForbidden) {
+              return status.Errorf(codes.PermissionDenied, "permission denied: %v", err)
+          }
+
+          return status.Errorf(codes.Internal, "internal error: %v", err)
+      }
+    hints:
+      - "Use errors.Is to match against sentinel errors - it works through wrapped errors too"
+      - "status.Errorf creates a gRPC status error with a code and formatted message"
+    key_concepts:
+      - "gRPC status codes"
+      - "status.Errorf"
+      - "Error mapping"
+
+  - id: "err-2"
+    type: fill_blank
+    difficulty: medium
+    title: "Client-Side Error Handling"
+    description: |
+      Extract and handle gRPC status errors on the client side. When
+      an RPC call fails, extract the status code and handle each code
+      differently. Wrap the error with additional context using fmt.Errorf
+      and the %w verb for error chaining.
+    scaffold: |
+      package client
+
+      import (
+          "fmt"
+
+          "google.golang.org/grpc/codes"
+          "google.golang.org/grpc/status"
+      )
+
+      func HandleRPCError(err error, operation string) error {
+          if err == nil {
+              return nil
+          }
+
+          // TODO: Extract the gRPC status from the error using
+          // status.FromError. If it's not a gRPC status error,
+          // wrap and return it as-is.
+
+          // TODO: Switch on the status code and return a
+          // context-appropriate wrapped error for:
+          //   - codes.NotFound: wrap with "not found" context
+          //   - codes.InvalidArgument: wrap with "bad request" context
+          //   - codes.Unavailable: wrap with "service unavailable" context
+          //   - codes.DeadlineExceeded: wrap with "timeout" context
+          //   - default: wrap with "rpc failed" context
+          // Use fmt.Errorf with %w to wrap the original error
+      }
+    solution: |
+      package client
+
+      import (
+          "fmt"
+
+          "google.golang.org/grpc/codes"
+          "google.golang.org/grpc/status"
+      )
+
+      func HandleRPCError(err error, operation string) error {
+          if err == nil {
+              return nil
+          }
+
+          st, ok := status.FromError(err)
+          if !ok {
+              return fmt.Errorf("%s: unexpected error: %w", operation, err)
+          }
+
+          switch st.Code() {
+          case codes.NotFound:
+              return fmt.Errorf("%s: not found: %w", operation, err)
+          case codes.InvalidArgument:
+              return fmt.Errorf("%s: bad request: %w", operation, err)
+          case codes.Unavailable:
+              return fmt.Errorf("%s: service unavailable: %w", operation, err)
+          case codes.DeadlineExceeded:
+              return fmt.Errorf("%s: timeout: %w", operation, err)
+          default:
+              return fmt.Errorf("%s: rpc failed (code=%s): %w", operation, st.Code(), err)
+          }
+      }
+    hints:
+      - "status.FromError returns (status, ok) - check ok to see if it's a gRPC status error"
+      - "Use fmt.Errorf with %w to wrap the original error so callers can unwrap it later"
+    key_concepts:
+      - "status.FromError"
+      - "Code extraction"
+      - "Error wrapping"

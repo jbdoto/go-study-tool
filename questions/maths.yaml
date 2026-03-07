@@ -1,0 +1,115 @@
+chapter: maths
+title: "Maths"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/math"
+questions:
+  - id: "math-mc-1"
+    type: multiple_choice
+    difficulty: medium
+    text: "What approach does the chapter use to validate SVG output in tests?"
+    correct: "Parse the SVG with encoding/xml and check struct fields for expected coordinates"
+    wrong:
+      - "Compare SVG strings with string equality"
+      - "Render the SVG to an image and compare pixels"
+      - "Use regex to match SVG attributes"
+      - "Write the SVG to a file and diff it"
+      - "Use a third-party SVG testing library"
+    explanation: "Using xml.Unmarshal into typed structs makes tests robust against formatting changes and gives precise field-level assertions."
+    source_anchor: "write-the-test-first"
+
+  - id: "math-mc-2"
+    type: multiple_choice
+    difficulty: hard
+    text: "Why can't you use == to compare float64 values in tests?"
+    correct: "Floating-point arithmetic produces tiny rounding errors, so exact equality often fails"
+    wrong:
+      - "Go doesn't support == for float64"
+      - "float64 values are stored as strings internally"
+      - "== compares the memory address, not the value"
+      - "float64 comparison is undefined behavior in Go"
+      - "The Go spec requires using math.Equal()"
+    explanation: "The chapter uses a roughlyEqual function with a threshold (e.g., 1e-7) to compare floats, accounting for floating-point imprecision."
+    source_anchor: "refactor"
+
+  - id: "math-mc-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does the encoding/xml struct tag 'xml:\"x1,attr\"' mean?"
+    correct: "Map the struct field to an XML attribute named 'x1'"
+    wrong:
+      - "Map the field to a child element named 'x1'"
+      - "Make the field optional in XML"
+      - "Set a default value of 'x1'"
+      - "Ignore the field during XML parsing"
+      - "Map the field to XML text content"
+    explanation: "The ,attr suffix tells the XML decoder to look for an attribute on the element rather than a child element."
+    source_anchor: "write-the-test-first"
+
+  - id: "math-mc-4"
+    type: multiple_choice
+    difficulty: easy
+    text: "What unit do math.Sin and math.Cos expect their arguments in?"
+    correct: "Radians"
+    wrong:
+      - "Degrees"
+      - "Gradians"
+      - "Turns (0 to 1)"
+      - "Either radians or degrees"
+      - "Percentages (0 to 100)"
+    explanation: "Go's math.Sin and math.Cos use radians. A full circle is 2*math.Pi radians, not 360 degrees."
+    source_anchor: "write-the-test-first"
+
+  - id: "math-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "Why does the SVG clock need to flip the Y axis?"
+    correct: "SVG's coordinate origin is at the top-left with Y increasing downward, opposite to standard math"
+    wrong:
+      - "SVG doesn't support negative coordinates"
+      - "The clock hands rotate counter-clockwise by default"
+      - "Browsers render SVG upside down"
+      - "The math package uses a different coordinate system"
+      - "Go's float64 doesn't support negative Y values"
+    explanation: "In SVG, (0,0) is top-left and Y grows downward. Math coordinates have Y growing upward, so you negate Y to convert."
+    source_anchor: "refactor"
+
+  - id: "math-mc-6"
+    type: multiple_choice
+    difficulty: hard
+    text: "What is the relationship between acceptance tests and unit tests in the chapter's approach?"
+    correct: "Acceptance tests define the feature goal; unit tests build toward it incrementally"
+    wrong:
+      - "Acceptance tests replace unit tests for complex features"
+      - "Unit tests run first, then acceptance tests validate"
+      - "They test the same thing at different speeds"
+      - "Acceptance tests are for QA; unit tests are for developers"
+      - "Unit tests mock everything; acceptance tests use real dependencies"
+    explanation: "The chapter starts with an acceptance test (valid SVG output), then writes unit tests for each calculation step until the acceptance test passes."
+    source_anchor: "write-the-test-first"
+
+  - id: "math-mc-7"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does fmt.Fprintf with \"%.3f\" do?"
+    correct: "Formats a float with exactly 3 decimal places"
+    wrong:
+      - "Rounds a float to 3 significant figures"
+      - "Pads a number to 3 digits"
+      - "Truncates after 3 characters"
+      - "Formats in scientific notation with 3 digits"
+      - "Prints the first 3 bytes of the value"
+    explanation: "%.3f formats a float64 with 3 digits after the decimal point, e.g., 3.14159 becomes 3.142."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "math-mc-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "What Kent Beck quote does the chapter reference about testing?"
+    correct: "Write tests until fear is transformed into boredom"
+    wrong:
+      - "Test everything that could possibly break"
+      - "If it's worth building, it's worth testing"
+      - "Make the change easy, then make the easy change"
+      - "First make it work, then make it right"
+      - "Red, green, refactor — that's all there is"
+    explanation: "The chapter uses this quote to suggest you write enough tests to feel confident, not to achieve arbitrary coverage targets."
+    source_anchor: "write-the-test-first"

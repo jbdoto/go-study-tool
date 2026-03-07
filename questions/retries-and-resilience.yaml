@@ -1,0 +1,107 @@
+chapter: retries-and-resilience
+title: "Retries & Resilience"
+source_url: "https://grpc.io/docs/guides/retry/"
+questions:
+  - id: "retry-mc-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is exponential backoff?"
+    correct: "A retry strategy where the wait time between retries increases exponentially (e.g., 1s, 2s, 4s, 8s)"
+    wrong:
+      - "A retry strategy where the wait time stays fixed between each retry attempt (e.g., 1s, 1s, 1s)"
+      - "A strategy that doubles the number of concurrent retry requests on each failure"
+      - "A strategy that exponentially reduces the timeout duration on each successive retry"
+      - "A strategy that sends retries to exponentially more backend servers simultaneously"
+      - "A strategy that retries only on exponentially numbered attempts (1st, 2nd, 4th, 8th)"
+    explanation: "Exponential backoff prevents overwhelming a struggling server by spacing out retries with increasing delays, typically doubling the wait time each attempt."
+
+  - id: "retry-mc-2"
+    type: multiple_choice
+    difficulty: medium
+    text: "Why is jitter added to retry backoff strategies?"
+    correct: "To prevent thundering herd problems where many clients retry at the same time"
+    wrong:
+      - "To make retries faster on average"
+      - "To add randomness for security purposes"
+      - "To test the server's ability to handle unpredictable load"
+      - "To comply with gRPC protocol requirements"
+      - "To ensure retries happen in a specific order across clients"
+    explanation: "Without jitter, clients that failed at the same time would all retry at the same intervals, creating synchronized bursts. Jitter randomizes the delay to spread out retries."
+
+  - id: "retry-mc-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the circuit breaker pattern?"
+    correct: "A mechanism that stops sending requests to a failing service after a threshold of failures, allowing it time to recover"
+    wrong:
+      - "A pattern that retries requests in a circular order across all available backend servers"
+      - "A hardware-level network protection mechanism that drops packets to overloaded services"
+      - "A pattern that breaks long-running RPCs into smaller sequential calls for reliability"
+      - "A load balancer feature that disconnects backends when their response times exceed a threshold"
+      - "A monitoring pattern that triggers alerts and rolls back deployments when error rates spike"
+    explanation: "Like an electrical circuit breaker, it 'opens' after detecting failures, preventing cascading failures. After a cooldown period, it allows test requests through to check if the service recovered."
+
+  - id: "retry-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "Why is idempotency important when implementing retries?"
+    correct: "Because a retried request might be processed multiple times, and idempotent operations produce the same result regardless"
+    wrong:
+      - "Because idempotent requests can be processed faster by the server since results are cacheable"
+      - "Because the gRPC specification requires all retryable methods to be declared as idempotent"
+      - "Because idempotent requests use less bandwidth since the server can skip processing duplicates"
+      - "Because only idempotent requests can be properly serialized and deserialized with protobuf"
+      - "Because non-idempotent requests are rejected by the HTTP/2 transport layer during retries"
+    explanation: "If a request times out but was actually processed, retrying a non-idempotent operation (like 'add $10') could apply it twice. Idempotent operations (like 'set balance to $110') are safe to retry."
+
+  - id: "retry-mc-5"
+    type: multiple_choice
+    difficulty: easy
+    text: "Which gRPC status code is generally considered safe to retry?"
+    correct: "UNAVAILABLE"
+    wrong:
+      - "INVALID_ARGUMENT"
+      - "NOT_FOUND"
+      - "PERMISSION_DENIED"
+      - "UNIMPLEMENTED"
+      - "ALREADY_EXISTS"
+    explanation: "UNAVAILABLE indicates a transient failure (server temporarily down, network issue). INVALID_ARGUMENT, NOT_FOUND, etc. are deterministic errors that retrying won't fix."
+
+  - id: "retry-mc-6"
+    type: multiple_choice
+    difficulty: hard
+    text: "How do deadlines interact with retry attempts in gRPC?"
+    correct: "All retry attempts must complete within the original deadline; the deadline is not reset per attempt"
+    wrong:
+      - "Each retry attempt gets a fresh copy of the original deadline, resetting the clock"
+      - "The deadline is automatically doubled for each successive retry attempt"
+      - "Deadlines are paused during backoff waiting periods and resumed on retry"
+      - "Retry attempts ignore the original deadline and use their own per-attempt timeout"
+      - "The deadline only applies to the first attempt; retries run without time constraints"
+    explanation: "The original deadline covers the entire operation including all retries. If 3 seconds remain and each attempt takes 2 seconds, only one retry is possible."
+
+  - id: "retry-mc-7"
+    type: multiple_choice
+    difficulty: hard
+    text: "What is hedging in gRPC retry policy?"
+    correct: "Sending multiple copies of the same request in parallel without waiting for failures"
+    wrong:
+      - "Gradually increasing the request payload size to test server capacity limits"
+      - "Routing requests to different data centers as a failover strategy on error"
+      - "Caching responses from previous requests to avoid the need for retries"
+      - "Sending requests through multiple network paths simultaneously for redundancy"
+      - "A technique for batching multiple retry requests together into one call"
+    explanation: "Hedging proactively sends duplicate requests after a configurable delay, using the first successful response. Unlike retries, hedging doesn't wait for a failure before sending additional attempts."
+
+  - id: "retry-mc-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "In gRPC's built-in retry policy, what does maxAttempts specify?"
+    correct: "The maximum total number of attempts including the original request"
+    wrong:
+      - "The maximum number of retries after the first failure"
+      - "The maximum concurrent retry requests"
+      - "The maximum number of servers to try"
+      - "The maximum number of seconds to keep retrying"
+      - "The maximum number of bytes to retry"
+    explanation: "If maxAttempts is 3, the client will make at most 3 total attempts: the original request plus up to 2 retries."

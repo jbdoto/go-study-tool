@@ -1,0 +1,143 @@
+chapter: arrays-and-slices
+title: "Arrays & Slices"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/arrays-and-slices"
+questions:
+  - id: "arr-mc-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is the key difference between an array and a slice in Go?"
+    correct: "Arrays have a fixed size that is part of their type; slices have a dynamic size"
+    wrong:
+      - "Arrays can hold any type; slices can only hold integers and strings"
+      - "Slices are immutable once created; arrays are mutable at any index"
+      - "Arrays are passed by reference; slices are always passed by value"
+      - "There is no difference; arrays and slices are interchangeable in Go"
+      - "Slices can only grow with append; they can never be reduced in size"
+    explanation: "[5]int and [4]int are different types in Go. Slices ([]int) don't encode their size in the type, making them more flexible."
+    source_anchor: "arrays-and-their-type"
+
+  - id: "arr-mc-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does range return on each iteration when used with a slice?"
+    correct: "The index and the value"
+    wrong:
+      - "Only the value"
+      - "Only the index"
+      - "The value and the length"
+      - "A pointer to the element"
+      - "The key and a boolean"
+    explanation: "range returns two values: the index (position) and a copy of the element at that index."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "arr-mc-3"
+    type: multiple_choice
+    difficulty: easy
+    text: "How do you ignore the index when using range in Go?"
+    correct: "Use the blank identifier: for _, v := range slice"
+    wrong:
+      - "Use nil: for nil, v := range slice"
+      - "Omit it: for v := range slice"
+      - "Use skip: for skip, v := range slice"
+      - "Use false: for false, v := range slice"
+      - "Use 0: for 0, v := range slice"
+    explanation: "The blank identifier _ tells Go you don't need that value. for _, v := range slice gives you just the values."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "arr-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is a variadic function in Go?"
+    correct: "A function that accepts a variable number of arguments using ... syntax"
+    wrong:
+      - "A function that returns multiple values"
+      - "A function that can be called with different types"
+      - "A function that runs concurrently"
+      - "A function that modifies its arguments in place"
+      - "A function that accepts only pointer arguments"
+    explanation: "Variadic functions like func SumAll(nums ...[]int) accept any number of arguments of the specified type."
+    source_anchor: "write-the-test-first-2"
+
+  - id: "arr-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "How do you get a sub-slice from index 1 to the end in Go?"
+    correct: "slice[1:]"
+    wrong:
+      - "slice.tail()"
+      - "slice[1..end]"
+      - "slice.from(1)"
+      - "slice(1, len(slice))"
+      - "slice.sub(1)"
+    explanation: "slice[1:] creates a new slice starting from index 1 to the end. Omitting the high bound defaults to len(slice)."
+    source_anchor: "write-enough-code-to-make-it-pass-3"
+
+  - id: "arr-mc-6"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does append() return in Go?"
+    correct: "A new slice with the element added (the original may or may not be modified)"
+    wrong:
+      - "Nothing — it modifies the slice in place"
+      - "A boolean indicating success"
+      - "The index where the element was added"
+      - "An error if the slice is full"
+      - "The length of the new slice"
+    explanation: "append returns a new slice value. You must capture the return: sums = append(sums, value). The underlying array may be reused or a new one allocated."
+    source_anchor: "refactor-2"
+
+  - id: "arr-mc-7"
+    type: multiple_choice
+    difficulty: hard
+    text: "Why does the chapter prefer slices.Equal (or reflect.DeepEqual) for comparing slices in tests?"
+    correct: "You cannot use == to compare slices in Go; it only works for comparing a slice to nil"
+    wrong:
+      - "== is slower than reflect.DeepEqual for slices"
+      - "== compares slice pointers, not values"
+      - "== only works with arrays, not slices"
+      - "reflect.DeepEqual provides better error messages"
+      - "The Go compiler optimizes reflect.DeepEqual calls"
+    explanation: "Go does not allow == between two slices (compile error). slices.Equal or reflect.DeepEqual compare element-by-element."
+    source_anchor: "refactor"
+
+  - id: "arr-mc-8"
+    type: multiple_choice
+    difficulty: easy
+    text: "What command shows test coverage in Go?"
+    correct: "go test -cover"
+    wrong:
+      - "go cover ."
+      - "go test --coverage"
+      - "go test -cov"
+      - "go report coverage"
+      - "go test -profile=cover"
+    explanation: "go test -cover reports what percentage of your code is covered by tests."
+    source_anchor: "wrapping-up"
+
+  - id: "arr-mc-9"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does make([]int, 5) do?"
+    correct: "Creates a slice of ints with length and capacity of 5, initialized to zero values"
+    wrong:
+      - "Creates an array of 5 integers"
+      - "Allocates 5 bytes of memory"
+      - "Creates an empty slice with capacity 5"
+      - "Creates a pointer to 5 integers"
+      - "Declares a constant integer of value 5"
+    explanation: "make creates a slice with the specified length (and optional capacity). Elements are initialized to their zero value (0 for int)."
+    source_anchor: "write-enough-code-to-make-it-pass-1"
+
+  - id: "arr-mc-10"
+    type: multiple_choice
+    difficulty: hard
+    text: "What does the chapter say about compile-time vs runtime errors?"
+    correct: "Compile-time errors are our friend; runtime errors are our enemies because they affect users"
+    wrong:
+      - "Both are equally bad and should be avoided"
+      - "Runtime errors are preferred because they give more context"
+      - "Compile-time errors should be suppressed with build flags"
+      - "Runtime errors are caught by the testing framework automatically"
+      - "Compile-time errors only matter in production builds"
+    explanation: "The chapter emphasizes that compile-time errors catch problems before code runs, while runtime errors can crash in production and affect users."
+    source_anchor: "wrapping-up"

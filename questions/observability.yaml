@@ -1,0 +1,133 @@
+chapter: observability
+title: "Observability"
+source_url: "https://opentelemetry.io/docs/concepts/"
+questions:
+  - id: "obs-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What are the three pillars of observability?"
+    correct: "Traces, metrics, and logs"
+    wrong:
+      - "Alerts, dashboards, and reports"
+      - "CPU, memory, and disk"
+      - "Latency, throughput, and errors"
+      - "Monitoring, profiling, and debugging"
+      - "Requests, responses, and errors"
+    explanation: "The three pillars are traces (distributed request flows), metrics (quantitative measurements), and logs (discrete event records). Together they provide full system visibility."
+
+  - id: "obs-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is a span in distributed tracing?"
+    correct: "A unit of work representing a single operation within a trace"
+    wrong:
+      - "The total duration of a distributed request"
+      - "A network connection between two services"
+      - "A log entry associated with a trace"
+      - "The distance between two services in a call chain"
+      - "A metric measuring request latency"
+    explanation: "A span represents a single operation (e.g., an RPC call, a database query). Spans have a start time, duration, and can be nested to form a trace tree."
+
+  - id: "obs-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is trace context propagation?"
+    correct: "Passing trace identifiers (trace ID, span ID) across service boundaries so spans can be correlated"
+    wrong:
+      - "Sending completed trace data from services to a centralized collector for storage"
+      - "Duplicating traces across multiple monitoring backends for redundancy purposes"
+      - "Converting trace data from one vendor format to another for cross-platform support"
+      - "Sampling a percentage of traces based on their context attributes and priority"
+      - "Encrypting trace data in transit for secure transmission between services"
+    explanation: "Trace context propagation (e.g., W3C Trace Context) injects trace/span IDs into request headers so downstream services can create child spans that link back to the same trace."
+
+  - id: "obs-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "What are the main components of the OpenTelemetry SDK?"
+    correct: "TracerProvider, Exporter, and Sampler"
+    wrong:
+      - "Logger, Formatter, and Writer"
+      - "Collector, Aggregator, and Alerter"
+      - "Client, Server, and Middleware"
+      - "Producer, Consumer, and Broker"
+      - "Encoder, Decoder, and Transport"
+    explanation: "TracerProvider creates tracers, Exporters send telemetry data to backends (Jaeger, Zipkin, etc.), and Samplers decide which traces to record to control volume."
+
+  - id: "obs-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is OTLP?"
+    correct: "OpenTelemetry Protocol, a standard protocol for transmitting telemetry data"
+    wrong:
+      - "Open Trace Logging Protocol for structured logs"
+      - "Observable Transport Layer Protocol for gRPC"
+      - "OpenTelemetry Language Pack for multi-language support"
+      - "Operational Telemetry Link Protocol for service mesh"
+      - "Open Testing and Linting Protocol for CI/CD"
+    explanation: "OTLP (OpenTelemetry Protocol) is the native protocol for sending traces, metrics, and logs to OpenTelemetry-compatible backends, typically over gRPC or HTTP."
+
+  - id: "obs-6"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is Go's slog package used for?"
+    correct: "Structured logging with key-value pairs and configurable output formats"
+    wrong:
+      - "System-level logging that writes directly to the syslog daemon"
+      - "Slow query logging for database performance monitoring"
+      - "Security audit logging with tamper-proof write-ahead logs"
+      - "Service-level objective monitoring and alerting framework"
+      - "Streaming log aggregation across distributed services"
+    explanation: "slog (introduced in Go 1.21) provides structured logging with levels, key-value attributes, and pluggable handlers for JSON, text, or custom output formats."
+
+  - id: "obs-7"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the slog.Handler interface used for?"
+    correct: "Customizing how log records are formatted and where they are written"
+    wrong:
+      - "Handling log file rotation, compression, and cleanup of old logs"
+      - "Filtering logs by severity level before they reach the output"
+      - "Routing log entries to different goroutines for parallel processing"
+      - "Converting structured log entries into OpenTelemetry trace spans"
+      - "Handling panics during logging and recovering the logger state"
+    explanation: "slog.Handler has Handle(context.Context, Record) and other methods. Implementations control output format (JSON, text) and destination (stdout, file, remote service)."
+
+  - id: "obs-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "Which metric type is best for tracking the number of requests processed?"
+    correct: "Counter"
+    wrong:
+      - "Gauge"
+      - "Histogram"
+      - "Summary"
+      - "Timer"
+      - "Meter"
+    explanation: "A counter is a monotonically increasing value, perfect for counting events like requests, errors, or bytes transmitted. Gauges are for values that go up and down."
+
+  - id: "obs-9"
+    type: multiple_choice
+    difficulty: hard
+    text: "What is the difference between auto-instrumentation and manual instrumentation in OpenTelemetry?"
+    correct: "Auto-instrumentation patches libraries to emit telemetry automatically; manual instrumentation requires explicit code"
+    wrong:
+      - "Auto-instrumentation has lower runtime overhead, while manual instrumentation is more accurate"
+      - "Auto-instrumentation is only used in production, while manual is only for development"
+      - "Auto-instrumentation collects metrics only, while manual instrumentation collects traces only"
+      - "Auto-instrumentation requires sidecar agents, while manual uses in-process SDKs only"
+      - "There is no real difference; both approaches produce identical telemetry output"
+    explanation: "Auto-instrumentation wraps common libraries (HTTP clients, gRPC, database drivers) to emit spans/metrics without code changes. Manual instrumentation gives you fine-grained control to add custom spans and attributes."
+
+  - id: "obs-10"
+    type: multiple_choice
+    difficulty: hard
+    text: "What is baggage in OpenTelemetry?"
+    correct: "Key-value pairs propagated across service boundaries alongside trace context for application-level data"
+    wrong:
+      - "Unused span attributes that accumulate over time and should be cleaned up periodically"
+      - "Metadata attached to metrics that enables grouping and filtering in dashboards"
+      - "Debug information that gets automatically appended to error traces for diagnosis"
+      - "The payload size overhead introduced by adding tracing headers to every request"
+      - "Orphaned spans that have no parent trace and cannot be correlated with a request"
+    explanation: "Baggage allows you to propagate application-specific key-value pairs (e.g., tenant ID, feature flags) across service boundaries via headers, separate from trace context."

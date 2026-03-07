@@ -1,0 +1,171 @@
+chapter: hello-world
+title: "Hello, World"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/hello-world"
+questions:
+  - id: "hw-mc-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What naming convention must Go test files follow?"
+    correct: "They must end with _test.go"
+    wrong:
+      - "They must start with test_"
+      - "They must be in a tests/ directory"
+      - "They must end with .test.go"
+      - "They must be named test.go"
+      - "They must start with Test"
+    explanation: "Go test files must be named xxx_test.go. The go test tool only picks up files matching this pattern."
+    source_anchor: "writing-tests"
+
+  - id: "hw-mc-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What must a Go test function name start with?"
+    correct: "Test"
+    wrong:
+      - "test"
+      - "Verify"
+      - "Check"
+      - "Assert"
+      - "Spec"
+    explanation: "Test functions must start with a capital 'Test' followed by a descriptive name. The testing framework uses this convention to discover tests."
+    source_anchor: "writing-tests"
+
+  - id: "hw-mc-3"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is the single required parameter for a Go test function?"
+    correct: "t *testing.T"
+    wrong:
+      - "t *testing.Test"
+      - "t *testing.B"
+      - "t testing.T"
+      - "ctx context.Context"
+      - "t *testing.Suite"
+    explanation: "Test functions take a single parameter t *testing.T, which provides methods like t.Errorf for reporting failures."
+    source_anchor: "writing-tests"
+
+  - id: "hw-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does the %q verb do in fmt.Errorf or t.Errorf?"
+    correct: "Wraps the string value in double quotes"
+    wrong:
+      - "Prints the value as an integer"
+      - "Prints the value as a boolean"
+      - "Prints the value as a pointer address"
+      - "Prints the value in hexadecimal"
+      - "Prints the value with escaped newlines only"
+    explanation: "%q formats a string surrounded by double quotes, which makes test failure messages clearer by showing exact string boundaries."
+    source_anchor: "terrorf"
+
+  - id: "hw-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "Why does the chapter extract the Hello logic into a separate function from main()?"
+    correct: "To make the domain logic testable — you can't test main() directly"
+    wrong:
+      - "main() cannot return strings"
+      - "Go requires at least two functions per file"
+      - "To improve runtime performance"
+      - "main() cannot accept parameters"
+      - "To reduce the binary size"
+    explanation: "Separating domain logic from main() lets you call it from tests. fmt.Println in main() writes to stdout which is hard to test."
+    source_anchor: "how-to-test"
+
+  - id: "hw-mc-6"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does t.Helper() do when called inside a test helper function?"
+    correct: "Reports test failures at the call site instead of inside the helper"
+    wrong:
+      - "Marks the test as skipped"
+      - "Runs the helper in parallel"
+      - "Prevents the helper from panicking"
+      - "Marks the function as a benchmark helper"
+      - "Suppresses output from the helper"
+    explanation: "t.Helper() tells the test runner to report the file and line number of the calling function, not the helper itself, making failures easier to find."
+    source_anchor: "hello-world...-again"
+
+  - id: "hw-mc-7"
+    type: multiple_choice
+    difficulty: medium
+    text: "Why should test helper functions accept testing.TB instead of *testing.T?"
+    correct: "testing.TB is an interface satisfied by both *testing.T and *testing.B, so helpers work in benchmarks too"
+    wrong:
+      - "testing.TB is faster because it avoids the overhead of the full *testing.T struct"
+      - "*testing.T is deprecated in favor of the more general testing.TB interface"
+      - "testing.TB provides additional assertion methods not available on *testing.T"
+      - "testing.TB allows running tests in parallel without explicit t.Parallel() calls"
+      - "testing.TB supports automatic test timeouts that *testing.T does not provide"
+    explanation: "testing.TB is an interface that both *testing.T (tests) and *testing.B (benchmarks) implement, making helpers reusable across both."
+    source_anchor: "hello-world...-again"
+
+  - id: "hw-mc-8"
+    type: multiple_choice
+    difficulty: easy
+    text: "How do you run subtests in Go?"
+    correct: "t.Run(\"name\", func(t *testing.T) { ... })"
+    wrong:
+      - "t.Sub(\"name\", func() { ... })"
+      - "testing.SubTest(\"name\", func() { ... })"
+      - "t.Case(\"name\", func(t *testing.T) { ... })"
+      - "t.Describe(\"name\", func(t *testing.T) { ... })"
+      - "t.It(\"name\", func(t *testing.T) { ... })"
+    explanation: "t.Run creates a subtest with a descriptive name and its own *testing.T, letting you group related test cases."
+    source_anchor: "hello-world...-again"
+
+  - id: "hw-mc-9"
+    type: multiple_choice
+    difficulty: easy
+    text: "In Go, how do you make a function public (exported)?"
+    correct: "Start its name with a capital letter"
+    wrong:
+      - "Use the 'public' keyword"
+      - "Add an 'export' annotation"
+      - "Place it in a public/ directory"
+      - "Use the 'extern' keyword"
+      - "Declare it in an interface"
+    explanation: "Go uses naming convention for visibility: capital letter = exported (public), lowercase = unexported (private to the package)."
+    source_anchor: "how-it-works"
+
+  - id: "hw-mc-10"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is a named return value in Go, and what happens to it?"
+    correct: "It creates a variable initialized to the zero value that can be returned with a bare 'return'"
+    wrong:
+      - "It's a label for the return type that has no effect on the code"
+      - "It forces the function to always return that specific variable name"
+      - "It's syntactic sugar for declaring a global variable"
+      - "It prevents the function from returning nil"
+      - "It automatically logs the return value"
+    explanation: "Named return values (e.g., func f() (prefix string)) create a local variable set to its zero value. You can assign to it and use a bare 'return' statement."
+    source_anchor: "one...last...refactor"
+
+  - id: "hw-mc-11"
+    type: multiple_choice
+    difficulty: hard
+    text: "What are the correct steps of the TDD cycle as described in the chapter?"
+    correct: "Write a failing test, write minimal code to pass it, refactor"
+    wrong:
+      - "Write code, write test, refactor"
+      - "Plan, implement, test"
+      - "Write test, refactor, then make it pass"
+      - "Write code, refactor, then write test"
+      - "Design, code, test, deploy"
+    explanation: "The TDD cycle is Red (failing test), Green (minimal code to pass), Refactor (clean up while tests pass). The chapter emphasizes writing the test first."
+    source_anchor: "wrapping-up"
+
+  - id: "hw-mc-12"
+    type: multiple_choice
+    difficulty: medium
+    text: "In Go, what is the shorthand for declaring multiple parameters of the same type?"
+    correct: "(a, b string) instead of (a string, b string)"
+    wrong:
+      - "(string a, b) instead of (string a, string b)"
+      - "There is no shorthand"
+      - "(a b string) instead of (a string, b string)"
+      - "[a, b] string instead of (a string, b string)"
+      - "(a: string, b: string) can be written as (a, b: string)"
+    explanation: "When consecutive parameters share a type, you can omit the type from all but the last: (got, want string) instead of (got string, want string)."
+    source_anchor: "hello-you"

@@ -1,0 +1,133 @@
+chapter: grpc-go-client
+title: "gRPC Go Client"
+source_url: "https://grpc.io/docs/languages/go/basics/"
+questions:
+  - id: "grpc-go-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "Which function is used to create a gRPC client connection in Go?"
+    correct: "grpc.NewClient (or the older grpc.Dial)"
+    wrong:
+      - "grpc.Connect"
+      - "grpc.Open"
+      - "grpc.CreateChannel"
+      - "net.DialGRPC"
+      - "grpc.NewConnection"
+    explanation: "grpc.NewClient is the current way to create a client connection. grpc.Dial is the older API that still works but is deprecated in newer versions."
+
+  - id: "grpc-go-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What option do you pass to grpc.NewClient to connect without TLS in development?"
+    correct: "grpc.WithTransportCredentials(insecure.NewCredentials())"
+    wrong:
+      - "grpc.WithInsecure() from the grpc package directly"
+      - "grpc.WithTLS(tls.InsecureConfig())"
+      - "grpc.WithDialOption(credentials.Plaintext())"
+      - "grpc.WithTransport(transport.NewInsecure())"
+      - "grpc.WithCredentials(credentials.NoVerify())"
+    explanation: "grpc.WithInsecure() is deprecated. The current approach uses grpc.WithTransportCredentials(insecure.NewCredentials()) from the google.golang.org/grpc/credentials/insecure package."
+
+  - id: "grpc-go-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is a unary client interceptor in gRPC Go?"
+    correct: "Middleware that wraps a unary RPC call to add cross-cutting concerns like logging or auth"
+    wrong:
+      - "A function that monitors RPCs and cancels them if they exceed a timeout"
+      - "A filter that validates and blocks certain request types before sending"
+      - "A serializer that transforms protobuf messages to JSON for wire transfer"
+      - "A connection pool manager that distributes calls across backend servers"
+      - "A built-in retry mechanism that automatically resends failed unary RPCs"
+    explanation: "A unary interceptor is a function with signature grpc.UnaryClientInterceptor that wraps each unary call, allowing you to add logging, metrics, auth headers, etc."
+
+  - id: "grpc-go-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the difference between a unary interceptor and a stream interceptor in gRPC Go?"
+    correct: "Unary interceptors wrap single request-response calls; stream interceptors wrap streaming RPCs"
+    wrong:
+      - "Unary interceptors run on the client, stream interceptors run on the server"
+      - "Unary interceptors are synchronous, stream interceptors are asynchronous"
+      - "Stream interceptors can only be used with bidirectional streaming"
+      - "There is no difference; they are interchangeable"
+      - "Unary interceptors handle errors, stream interceptors handle data"
+    explanation: "gRPC Go provides separate interceptor types because streaming RPCs have a different lifecycle (open stream, send/receive multiple messages, close) than unary RPCs."
+
+  - id: "grpc-go-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does the client-side load balancing policy 'round_robin' do in gRPC?"
+    correct: "Distributes RPCs evenly across all resolved backend addresses"
+    wrong:
+      - "Sends all RPCs to the first available backend"
+      - "Routes RPCs based on message content"
+      - "Picks a random backend for each RPC"
+      - "Sends RPCs to the backend with the lowest latency"
+      - "Queues RPCs and batches them to reduce connections"
+    explanation: "The round_robin policy cycles through all addresses returned by the name resolver, sending each successive RPC to the next backend in the list."
+
+  - id: "grpc-go-6"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is the default load balancing policy in gRPC if none is specified?"
+    correct: "pick_first"
+    wrong:
+      - "round_robin"
+      - "least_connections"
+      - "random"
+      - "weighted_round_robin"
+      - "consistent_hash"
+    explanation: "pick_first tries each resolved address in order and uses the first one that connects successfully, sticking with it until it fails."
+
+  - id: "grpc-go-7"
+    type: multiple_choice
+    difficulty: hard
+    text: "Which gRPC client connection state means the connection is established and ready for RPCs?"
+    correct: "READY"
+    wrong:
+      - "CONNECTED"
+      - "ACTIVE"
+      - "OPEN"
+      - "ESTABLISHED"
+      - "LIVE"
+    explanation: "gRPC connection states are: IDLE, CONNECTING, READY, TRANSIENT_FAILURE, and SHUTDOWN. READY means the connection is established and can handle RPCs."
+
+  - id: "grpc-go-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "What are keepalive parameters used for in a gRPC Go client?"
+    correct: "Sending periodic pings to detect dead connections and keep them alive through proxies"
+    wrong:
+      - "Caching RPC responses locally so repeated calls avoid network round trips"
+      - "Maintaining a pool of pre-warmed connections ready for immediate use"
+      - "Automatically retrying failed RPCs with configurable backoff intervals"
+      - "Persisting connection state to disk so it can be recovered after restarts"
+      - "Monitoring server health through periodic health check RPC calls"
+    explanation: "Keepalive pings detect broken connections early and prevent idle connections from being dropped by intermediate proxies or load balancers."
+
+  - id: "grpc-go-9"
+    type: multiple_choice
+    difficulty: hard
+    text: "How do you configure a gRPC retry policy on the client side in Go?"
+    correct: "Pass a default service config JSON string with retryPolicy via grpc.WithDefaultServiceConfig"
+    wrong:
+      - "Use grpc.WithRetry(maxAttempts) as a dial option to set retry count"
+      - "Wrap each call in a for loop with exponential backoff and jitter"
+      - "Set the GRPC_RETRY_COUNT environment variable before connecting"
+      - "Use a stream interceptor that intercepts failures and re-sends messages"
+      - "Call grpc.EnableRetries() on the connection before making any calls"
+    explanation: "gRPC's built-in retry support is configured through service config JSON, specifying maxAttempts, retryableStatusCodes, backoff, etc."
+
+  - id: "grpc-go-10"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does gRPC name resolution do?"
+    correct: "Resolves a target string (like a DNS name) into a list of backend addresses"
+    wrong:
+      - "Maps RPC method names to their corresponding server handler functions"
+      - "Translates protobuf field names to their JSON key equivalents"
+      - "Converts gRPC service names to their proto package name prefixes"
+      - "Resolves import paths in .proto files to their file system locations"
+      - "Maps gRPC error codes to their human-readable status descriptions"
+    explanation: "Name resolution in gRPC converts a target URI (e.g., dns:///myservice.example.com) into a set of addresses that the load balancer can distribute RPCs across."

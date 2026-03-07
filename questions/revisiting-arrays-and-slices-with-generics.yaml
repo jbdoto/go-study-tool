@@ -1,0 +1,115 @@
+chapter: revisiting-arrays-and-slices-with-generics
+title: "Revisiting Arrays & Slices with Generics"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/revisiting-arrays-and-slices-with-generics"
+questions:
+  - id: "rag-mc-1"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the Reduce (fold) pattern?"
+    correct: "A higher-order function that combines all elements of a collection into a single value using a function"
+    wrong:
+      - "A function that removes elements from a slice"
+      - "A way to compress data for storage"
+      - "A pattern for reducing memory allocation"
+      - "A function that splits a slice into smaller chunks"
+      - "A concurrency pattern for reducing goroutine count"
+    explanation: "Reduce applies a function cumulatively: Reduce([1,2,3], add, 0) computes ((0+1)+2)+3 = 6."
+    source_anchor: "write-the-test-first"
+
+  - id: "rag-mc-2"
+    type: multiple_choice
+    difficulty: hard
+    text: "What makes the polymorphic version of Reduce different from the basic version?"
+    correct: "It uses two type parameters [A, B any] so the accumulator can be a different type than the elements"
+    wrong:
+      - "It accepts multiple slices instead of one, combining their elements during reduction"
+      - "It processes elements in reverse order, folding from the last element to the first"
+      - "It runs the reduce function concurrently across elements using multiple goroutines"
+      - "It returns an error alongside the result in case the reduce function fails"
+      - "It requires the comparable constraint on both type parameters for equality checks"
+    explanation: "Reduce[A, B any] lets you reduce []Transaction (type A) into a float64 balance (type B), unlike basic Reduce where input and output types match."
+    source_anchor: "refactor"
+
+  - id: "rag-mc-3"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does the Find function return?"
+    correct: "The first matching element and a boolean indicating if it was found"
+    wrong:
+      - "The index of the first match"
+      - "All elements that match the predicate"
+      - "The last matching element"
+      - "An error if no match is found"
+      - "A pointer to the matching element"
+    explanation: "Find[A any](items []A, predicate func(A) bool) (A, bool) returns the value and true if found, or zero value and false."
+    source_anchor: "write-the-test-first"
+
+  - id: "rag-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is an identity element in the context of Reduce?"
+    correct: "The neutral starting value that doesn't change the result (0 for addition, 1 for multiplication)"
+    wrong:
+      - "The first element of the input slice"
+      - "A function that returns its input unchanged"
+      - "The type parameter constraint"
+      - "A unique identifier for the reduce operation"
+      - "The zero value of the return type"
+    explanation: "The identity element is the initial accumulator value. For addition it's 0 (x+0=x), for multiplication it's 1 (x*1=x)."
+    source_anchor: "write-the-test-first"
+
+  - id: "rag-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "How is Sum implemented using Reduce in the chapter?"
+    correct: "Reduce(numbers, func(a, b int) int { return a + b }, 0)"
+    wrong:
+      - "Reduce(numbers, math.Add, 0)"
+      - "Reduce(numbers, '+', 0)"
+      - "Reduce[int](numbers, add)"
+      - "numbers.Reduce(add, 0)"
+      - "Fold(numbers, sum, nil)"
+    explanation: "Sum passes an addition function and 0 (identity for addition) to Reduce, which folds all numbers into their sum."
+    source_anchor: "write-the-test-first"
+
+  - id: "rag-mc-6"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is a higher-order function?"
+    correct: "A function that takes other functions as arguments or returns a function"
+    wrong:
+      - "A function defined at the package level"
+      - "A function with more than three parameters"
+      - "A recursive function"
+      - "A function that calls itself indirectly"
+      - "A function that uses generics"
+    explanation: "Higher-order functions like Reduce, Find, and Filter accept function arguments, enabling flexible, reusable abstractions."
+    source_anchor: "wrapping-up"
+
+  - id: "rag-mc-7"
+    type: multiple_choice
+    difficulty: medium
+    text: "What advantage does declarative code (using Reduce/Find/Filter) have over imperative loops?"
+    correct: "It describes what should happen rather than how, improving readability"
+    wrong:
+      - "It's always faster than imperative code"
+      - "It uses less memory"
+      - "It's required for concurrent code"
+      - "Go's compiler optimizes it better"
+      - "It prevents all runtime errors"
+    explanation: "Declarative style (Sum = Reduce(numbers, add, 0)) communicates intent clearly, while imperative loops focus on mechanics."
+    source_anchor: "wrapping-up"
+
+  - id: "rag-mc-8"
+    type: multiple_choice
+    difficulty: hard
+    text: "How does the chapter use Reduce to calculate a bank balance from transactions?"
+    correct: "Reduce with a function that adds credits and subtracts debits, starting from 0.0"
+    wrong:
+      - "Filter transactions then sum the amounts"
+      - "Map transactions to amounts then sum"
+      - "Sort transactions chronologically then fold"
+      - "Use a channel to process transactions concurrently"
+      - "Create a Balance method on the Transaction type"
+    explanation: "The adjustBalance function checks if you're the sender (subtract) or receiver (add), and Reduce folds all transactions into a final balance."
+    source_anchor: "refactor"

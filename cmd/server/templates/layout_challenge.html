@@ -1,0 +1,54 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Study Tool - Code Challenge</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <style>
+        .correct { color: green; font-weight: bold; }
+        .incorrect { color: red; font-weight: bold; }
+        .explanation { margin-top: 0.5rem; padding: 0.75rem; background: var(--pico-muted-border-color); border-radius: 0.25rem; }
+        .difficulty { font-size: 0.8rem; padding: 0.15rem 0.5rem; border-radius: 0.25rem; background: var(--pico-muted-border-color); }
+        #editor-container { width: 100%; height: 400px; border: 1px solid var(--pico-muted-border-color); border-radius: 0.25rem; }
+        .solution-code { background: var(--pico-muted-border-color); padding: 1rem; border-radius: 0.25rem; overflow-x: auto; }
+        .hint-box { padding: 0.75rem; margin-top: 0.5rem; background: #fff3cd; border-radius: 0.25rem; border-left: 4px solid #ffc107; }
+        .key-concepts { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+        .key-concepts span { background: var(--pico-primary-background); color: var(--pico-primary-inverse); padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.8rem; }
+        .check-ok { color: green; padding: 0.5rem; }
+        .check-error { color: red; padding: 0.5rem; white-space: pre-wrap; font-family: monospace; }
+        .btn-group { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <nav>
+            <ul><li><strong><a href="/">Go Study Tool</a></strong></li></ul>
+        </nav>
+        {{template "content" .}}
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.min.js"></script>
+    <script>
+        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            var scaffoldEl = document.getElementById('scaffold-data');
+            if (scaffoldEl) {
+                var scaffold = JSON.parse(scaffoldEl.textContent);
+                window.editor = monaco.editor.create(document.getElementById('editor-container'), {
+                    value: scaffold,
+                    language: 'go',
+                    theme: 'vs-light',
+                    minimap: { enabled: false },
+                    fontSize: 14,
+                    lineNumbers: 'on',
+                    scrollBeyondLastLine: false,
+                    automaticLayout: true,
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+{{end}}

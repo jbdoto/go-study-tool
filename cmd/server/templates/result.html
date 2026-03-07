@@ -1,0 +1,15 @@
+{{if .Correct}}
+<p class="correct">Correct!</p>
+{{else}}
+<p class="incorrect">Incorrect. The correct answer is: {{.CorrectAnswer}}</p>
+{{end}}
+<div class="explanation">
+    {{.Explanation}}
+    <br><small><a href="{{.SourceURL}}" target="_blank">Read more in the book</a></small>
+    {{if .ChapterSlug}}<br><small><a href="/chapter/{{.ChapterSlug}}">Drill: {{.ChapterTitle}}</a></small>{{end}}
+</div>
+{{if .IsLast}}
+<a href="{{.QuizPath}}" role="button" style="margin-top: 1rem;">See Results</a>
+{{else}}
+<a href="{{.NextURL}}" role="button" style="margin-top: 1rem;">Next Question</a>
+{{end}}

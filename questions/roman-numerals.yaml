@@ -1,0 +1,115 @@
+chapter: roman-numerals
+title: "Intro to Property Based Tests"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/roman-numerals"
+questions:
+  - id: "roman-mc-1"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is property-based testing?"
+    correct: "Testing that random inputs consistently satisfy domain rules, rather than checking specific examples"
+    wrong:
+      - "Testing object properties and getters/setters"
+      - "Testing with production data instead of mocks"
+      - "Testing each struct field individually"
+      - "A framework for testing CSS properties"
+      - "Testing by comparing two implementations"
+    explanation: "Property-based tests generate random inputs and verify that invariants (properties) always hold, catching edge cases you might miss."
+    source_anchor: "wrapping-up"
+
+  - id: "roman-mc-2"
+    type: multiple_choice
+    difficulty: medium
+    text: "What Go package provides property-based testing?"
+    correct: "testing/quick"
+    wrong:
+      - "testing/property"
+      - "testing/fuzz"
+      - "testing/random"
+      - "quickcheck (third-party)"
+      - "testing/gen"
+    explanation: "testing/quick provides quick.Check which runs a function with random inputs and reports the first failing case."
+    source_anchor: "wrapping-up"
+
+  - id: "roman-mc-3"
+    type: multiple_choice
+    difficulty: hard
+    text: "What property does the chapter test for roman numeral conversion?"
+    correct: "Converting to Roman and back to Arabic yields the original number: ConvertToArabic(ConvertToRoman(n)) == n"
+    wrong:
+      - "The Roman numeral string representation is always shorter than the Arabic number representation"
+      - "Every valid Roman numeral contains at least one character and no more than fifteen"
+      - "The conversion algorithm runs in O(1) constant time regardless of the input number"
+      - "Roman numerals sort in alphabetical order in the same order as their numeric values"
+      - "The conversion functions never return an error for any input in the uint16 range"
+    explanation: "The round-trip property ensures both conversion functions are consistent: encode then decode must return the original value."
+    source_anchor: "wrapping-up"
+
+  - id: "roman-mc-4"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is the TDD approach the chapter uses for roman numerals?"
+    correct: "Start with the simplest case (1 -> I) and add cases incrementally until a pattern emerges"
+    wrong:
+      - "Write all test cases first, then implement the entire algorithm"
+      - "Start with the hardest case to establish the algorithm"
+      - "Use property-based tests from the start"
+      - "Copy a roman numeral algorithm and write tests after"
+      - "Start with a complete lookup table"
+    explanation: "The chapter identifies 'thin vertical slices' — starting with 1, then 2, then 5, each revealing more of the pattern until the data-driven solution emerges."
+    source_anchor: "write-the-test-first"
+
+  - id: "roman-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "Why does the chapter switch from int to uint16 for the Arabic number type?"
+    correct: "Roman numerals don't support negatives or values over 3999 — uint16 constrains the domain"
+    wrong:
+      - "uint16 is faster for arithmetic operations"
+      - "The testing/quick package only supports uint16"
+      - "int causes overflow with large roman numerals"
+      - "uint16 provides better error messages"
+      - "Go requires unsigned types for property tests"
+    explanation: "Using uint16 prevents generating negative numbers and narrows the range. The property test still guards against values > 3999 explicitly."
+    source_anchor: "wrapping-up"
+
+  - id: "roman-mc-6"
+    type: multiple_choice
+    difficulty: medium
+    text: "What Go function is used to configure the number of iterations in quick.Check?"
+    correct: "Pass &quick.Config{MaxCount: n} as the second argument"
+    wrong:
+      - "Set testing.QuickIterations in TestMain"
+      - "Use the -quickcount flag with go test"
+      - "Call quick.SetIterations(n) before the test"
+      - "Pass the count as the third argument to quick.Check"
+      - "Set an environment variable QUICK_COUNT"
+    explanation: "quick.Check accepts an optional *quick.Config where MaxCount controls how many random inputs to test."
+    source_anchor: "wrapping-up"
+
+  - id: "roman-mc-7"
+    type: multiple_choice
+    difficulty: easy
+    text: "What string function does the chapter use to check if a Roman numeral starts with a specific prefix?"
+    correct: "strings.HasPrefix()"
+    wrong:
+      - "strings.StartsWith()"
+      - "strings.BeginsWith()"
+      - "strings.Index() == 0"
+      - "strings.Match()"
+      - "strings.Head()"
+    explanation: "strings.HasPrefix(s, prefix) returns true if s starts with prefix. Used with strings.TrimPrefix to parse Roman numerals."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "roman-mc-8"
+    type: multiple_choice
+    difficulty: hard
+    text: "What is the key insight from property-based testing according to the chapter?"
+    correct: "You need a good understanding of your domain to write meaningful properties"
+    wrong:
+      - "Property tests replace the need for unit tests"
+      - "Random testing always finds more bugs than example tests"
+      - "Properties are easier to write than example tests"
+      - "Property tests are only useful for mathematical functions"
+      - "You should use property tests for every function"
+    explanation: "The chapter states: 'The real challenge about property based tests is having a good understanding of your domain so you can write these properties.'"
+    source_anchor: "wrapping-up"

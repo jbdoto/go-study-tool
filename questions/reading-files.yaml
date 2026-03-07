@@ -1,0 +1,115 @@
+chapter: reading-files
+title: "Reading Files"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/reading-files"
+questions:
+  - id: "rf-mc-1"
+    type: multiple_choice
+    difficulty: medium
+    text: "What interface does the chapter use to abstract file system access?"
+    correct: "fs.FS from the io/fs package"
+    wrong:
+      - "os.FileSystem"
+      - "io.FileReader"
+      - "filepath.FS"
+      - "ioutil.FS"
+      - "os.DirFS (concrete type, not interface)"
+    explanation: "fs.FS is an interface with a single Open method. Functions accepting fs.FS work with real files, embedded files, and test file systems."
+    source_anchor: "write-the-test-first"
+
+  - id: "rf-mc-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does testing/fstest.MapFS provide?"
+    correct: "An in-memory file system implementation for testing without real files"
+    wrong:
+      - "A tool for comparing two file systems"
+      - "A mock that tracks file access calls"
+      - "A temporary directory that auto-cleans"
+      - "A file system that validates path syntax"
+      - "A read-only wrapper around os.DirFS"
+    explanation: "MapFS lets you define files as a map in your test code, avoiding the need for test fixture files on disk."
+    source_anchor: "write-the-test-first"
+
+  - id: "rf-mc-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does bufio.Scanner do?"
+    correct: "Reads input line-by-line (or by custom split function), advancing with Scan() and reading with Text()"
+    wrong:
+      - "Scans directories for files matching a pattern"
+      - "Parses JSON or XML input"
+      - "Reads an entire file into memory at once"
+      - "Validates input against a format string"
+      - "Scans for security vulnerabilities in file content"
+    explanation: "bufio.Scanner wraps an io.Reader and provides convenient line-by-line reading via Scan() (advance) and Text() (get current line)."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "rf-mc-4"
+    type: multiple_choice
+    difficulty: easy
+    text: "How do you create an fs.FS from a real directory in production code?"
+    correct: "os.DirFS(\"path/to/dir\")"
+    wrong:
+      - "fs.Open(\"path/to/dir\")"
+      - "os.OpenDir(\"path/to/dir\")"
+      - "filepath.FS(\"path/to/dir\")"
+      - "ioutil.DirFS(\"path/to/dir\")"
+      - "io.DirFS(\"path/to/dir\")"
+    explanation: "os.DirFS returns an fs.FS rooted at the given directory. Pass it to functions that accept fs.FS for real file system access."
+    source_anchor: "wrapping-up"
+
+  - id: "rf-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the benefit of accepting fs.FS instead of reading files directly with os.Open?"
+    correct: "It enables dependency injection — tests use MapFS, production uses os.DirFS, and you can also use embed.FS"
+    wrong:
+      - "fs.FS is faster than os.Open because it uses buffered I/O by default"
+      - "fs.FS handles character encoding and line ending normalization automatically"
+      - "os.Open is deprecated since Go 1.16 and should be replaced with fs.FS"
+      - "fs.FS provides built-in caching that avoids redundant disk reads"
+      - "fs.FS supports concurrent reads from multiple goroutines without locking"
+    explanation: "Depending on the fs.FS interface lets you swap implementations: real files, embedded files, or in-memory test files — all with the same code."
+    source_anchor: "wrapping-up"
+
+  - id: "rf-mc-6"
+    type: multiple_choice
+    difficulty: hard
+    text: "Why does the chapter recommend using a _test package suffix (e.g., package blogposts_test)?"
+    correct: "It forces you to test from the consumer's perspective, only using the exported API"
+    wrong:
+      - "Go requires test files to use a different package"
+      - "It prevents test code from being compiled into the binary"
+      - "It enables parallel test execution"
+      - "It gives access to private fields for thorough testing"
+      - "It's required for testing/fstest to work"
+    explanation: "External test packages (package foo_test) can only access exported symbols, ensuring you test the public API as a real consumer would."
+    source_anchor: "write-the-test-first"
+
+  - id: "rf-mc-7"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does strings.TrimPrefix do?"
+    correct: "Removes a specified prefix from a string if present, returning the string unchanged if not"
+    wrong:
+      - "Removes whitespace from the beginning of a string"
+      - "Removes all occurrences of a substring"
+      - "Trims the string to a maximum length"
+      - "Removes the first character of the string"
+      - "Removes the prefix and returns a boolean"
+    explanation: "strings.TrimPrefix(\"Title: Hello\", \"Title: \") returns \"Hello\". If the prefix isn't present, it returns the original string."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "rf-mc-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "What design principle does the chapter emphasize for function signatures?"
+    correct: "Accept interfaces (like io.Reader, fs.FS) rather than concrete types"
+    wrong:
+      - "Always accept string paths for maximum compatibility"
+      - "Use variadic parameters for flexibility"
+      - "Return errors as the last value"
+      - "Accept pointers instead of values"
+      - "Use generics for all input types"
+    explanation: "Accepting interfaces like fs.FS and io.Reader decouples your code from specific implementations, making it testable and reusable."
+    source_anchor: "wrapping-up"

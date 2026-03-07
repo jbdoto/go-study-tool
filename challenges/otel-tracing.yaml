@@ -1,0 +1,134 @@
+challenge_set: otel-tracing
+title: "OpenTelemetry Tracing"
+challenges:
+  - id: "otel-1"
+    type: fill_blank
+    difficulty: hard
+    title: "Initialize Trace Provider"
+    description: |
+      Initialize an OpenTelemetry trace provider with an OTLP gRPC
+      exporter. Configure it with a resource that includes the service
+      name and version. The trace provider should use a batch span
+      processor for efficient export.
+    scaffold: |
+      package tracing
+
+      import (
+          "context"
+
+          "go.opentelemetry.io/otel"
+          "go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+          "go.opentelemetry.io/otel/sdk/resource"
+          sdktrace "go.opentelemetry.io/otel/sdk/trace"
+          semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+      )
+
+      func InitTracer(ctx context.Context, serviceName, version string) (*sdktrace.TracerProvider, error) {
+          // TODO: Create an OTLP gRPC exporter using otlptracegrpc.New
+
+          // TODO: Create a resource with service name and version
+          // using resource.NewWithAttributes and semconv constants
+
+          // TODO: Create a TracerProvider with:
+          //   - A BatchSpanProcessor wrapping the exporter
+          //   - The resource you created
+
+          // TODO: Set the global tracer provider using otel.SetTracerProvider
+
+          // TODO: Return the provider
+      }
+    solution: |
+      package tracing
+
+      import (
+          "context"
+
+          "go.opentelemetry.io/otel"
+          "go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+          "go.opentelemetry.io/otel/sdk/resource"
+          sdktrace "go.opentelemetry.io/otel/sdk/trace"
+          semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+      )
+
+      func InitTracer(ctx context.Context, serviceName, version string) (*sdktrace.TracerProvider, error) {
+          exporter, err := otlptracegrpc.New(ctx)
+          if err != nil {
+              return nil, err
+          }
+
+          res, err := resource.NewWithAttributes(
+              semconv.SchemaURL,
+              semconv.ServiceName(serviceName),
+              semconv.ServiceVersion(version),
+          )
+          if err != nil {
+              return nil, err
+          }
+
+          tp := sdktrace.NewTracerProvider(
+              sdktrace.WithBatcher(exporter),
+              sdktrace.WithResource(res),
+          )
+
+          otel.SetTracerProvider(tp)
+
+          return tp, nil
+      }
+    hints:
+      - "otlptracegrpc.New(ctx) creates an exporter that sends spans to an OTLP collector via gRPC"
+      - "sdktrace.WithBatcher wraps the exporter in a batch processor for efficient export"
+    key_concepts:
+      - "TracerProvider"
+      - "OTLP exporter"
+      - "Resource attributes"
+
+  - id: "otel-2"
+    type: fill_blank
+    difficulty: medium
+    title: "gRPC Client Tracing Interceptors"
+    description: |
+      Add OpenTelemetry tracing to gRPC client calls by configuring
+      the appropriate interceptors. These interceptors automatically
+      create spans for each RPC call and propagate trace context
+      across service boundaries.
+    scaffold: |
+      package client
+
+      import (
+          "google.golang.org/grpc"
+          "google.golang.org/grpc/credentials/insecure"
+          "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+      )
+
+      func NewTracedConnection(addr string) (*grpc.ClientConn, error) {
+          // TODO: Create a gRPC client connection with OpenTelemetry
+          // unary and stream interceptors using otelgrpc
+          // Also use insecure credentials for this example
+      }
+    solution: |
+      package client
+
+      import (
+          "google.golang.org/grpc"
+          "google.golang.org/grpc/credentials/insecure"
+          "go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+      )
+
+      func NewTracedConnection(addr string) (*grpc.ClientConn, error) {
+          conn, err := grpc.Dial(addr,
+              grpc.WithTransportCredentials(insecure.NewCredentials()),
+              grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
+              grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
+          )
+          if err != nil {
+              return nil, err
+          }
+          return conn, nil
+      }
+    hints:
+      - "otelgrpc.UnaryClientInterceptor() returns a ready-to-use unary interceptor"
+      - "Use grpc.WithUnaryInterceptor and grpc.WithStreamInterceptor as dial options"
+    key_concepts:
+      - "otelgrpc interceptors"
+      - "Span propagation"
+      - "Trace context"

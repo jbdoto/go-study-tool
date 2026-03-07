@@ -1,0 +1,87 @@
+chapter: install-go
+title: "Install Go"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/install-go"
+questions:
+  - id: "install-mc-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What command initializes a new Go module in your project directory?"
+    correct: "go mod init"
+    wrong:
+      - "go new module"
+      - "go init"
+      - "go create mod"
+      - "go module new"
+      - "go setup"
+    explanation: "'go mod init <modulepath>' creates a go.mod file that tracks your module's dependencies and Go version."
+    source_anchor: "go-modules"
+
+  - id: "install-mc-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What file does 'go mod init' generate?"
+    correct: "go.mod"
+    wrong:
+      - "go.sum"
+      - "go.lock"
+      - "package.json"
+      - "go.yaml"
+      - "module.conf"
+    explanation: "go.mod contains the module path, Go version, and dependency requirements for your project."
+    source_anchor: "go-modules"
+
+  - id: "install-mc-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "Since Go 1.16, what is the default build mode for Go projects?"
+    correct: "Module-aware mode"
+    wrong:
+      - "GOPATH mode"
+      - "Vendor mode"
+      - "Workspace mode"
+      - "Package mode"
+      - "Legacy mode"
+    explanation: "Go modules became the default build mode in Go 1.16, replacing the older GOPATH-based workflow."
+    source_anchor: "go-modules"
+
+  - id: "install-mc-4"
+    type: multiple_choice
+    difficulty: easy
+    text: "What built-in tool does Go provide for code formatting?"
+    correct: "go fmt"
+    wrong:
+      - "go lint"
+      - "go format"
+      - "go style"
+      - "go pretty"
+      - "go beautify"
+    explanation: "go fmt is Go's opinionated code formatter. It enforces a consistent style and should be run on every save."
+    source_anchor: "go-environment"
+
+  - id: "install-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "What information is stored in a go.mod file?"
+    correct: "Module path, Go version, and dependency requirements"
+    wrong:
+      - "Compiled binary output paths"
+      - "Test coverage results"
+      - "Editor configuration settings"
+      - "Build flags and compiler options"
+      - "Package documentation strings"
+    explanation: "go.mod tracks the module path (its import path), the Go version, and all required dependencies with their versions."
+    source_anchor: "go-modules"
+
+  - id: "install-mc-6"
+    type: multiple_choice
+    difficulty: medium
+    text: "What happens if you run 'go mod init' without specifying a module path?"
+    correct: "It attempts to infer the module path from the directory structure"
+    wrong:
+      - "It fails with an error"
+      - "It creates a module named 'main'"
+      - "It prompts you interactively for the path"
+      - "It uses the current directory name as the full module path"
+      - "It generates a random module name"
+    explanation: "When no module path is given, Go tries to infer it from version control metadata or the directory structure."
+    source_anchor: "go-modules"

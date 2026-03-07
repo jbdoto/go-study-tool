@@ -1,0 +1,105 @@
+challenge_set: graceful-shutdown
+title: "Graceful Shutdown"
+challenges:
+  - id: "shutdown-1"
+    type: free_form
+    difficulty: hard
+    title: "Signal-Based Graceful Shutdown"
+    description: |
+      Implement signal-based graceful shutdown for a gRPC server.
+      The server should listen for SIGINT and SIGTERM, then gracefully
+      stop by finishing in-flight requests. If graceful shutdown takes
+      too long (over 10 seconds), force stop the server.
+    scaffold: |
+      package main
+
+      import (
+          "log"
+          "net"
+          "os"
+          "os/signal"
+          "syscall"
+          "time"
+
+          "google.golang.org/grpc"
+      )
+
+      func main() {
+          lis, err := net.Listen("tcp", ":50051")
+          if err != nil {
+              log.Fatalf("failed to listen: %v", err)
+          }
+
+          srv := grpc.NewServer()
+          // assume services are registered here
+
+          // TODO: Use signal.NotifyContext or signal.Notify to catch
+          // SIGINT and SIGTERM
+
+          // TODO: Start the server in a goroutine
+
+          // TODO: Block until a shutdown signal is received
+
+          // TODO: Initiate GracefulStop with a 10-second timeout
+          // If the timeout expires, call srv.Stop() to force shutdown
+      }
+    solution: |
+      package main
+
+      import (
+          "context"
+          "log"
+          "net"
+          "os/signal"
+          "syscall"
+          "time"
+
+          "google.golang.org/grpc"
+      )
+
+      func main() {
+          lis, err := net.Listen("tcp", ":50051")
+          if err != nil {
+              log.Fatalf("failed to listen: %v", err)
+          }
+
+          srv := grpc.NewServer()
+          // assume services are registered here
+
+          ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+          defer stop()
+
+          go func() {
+              log.Println("server listening on :50051")
+              if err := srv.Serve(lis); err != nil {
+                  log.Printf("server exited: %v", err)
+              }
+          }()
+
+          <-ctx.Done()
+          log.Println("shutdown signal received")
+
+          shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+          defer cancel()
+
+          done := make(chan struct{})
+          go func() {
+              srv.GracefulStop()
+              close(done)
+          }()
+
+          select {
+          case <-done:
+              log.Println("server stopped gracefully")
+          case <-shutdownCtx.Done():
+              log.Println("graceful shutdown timed out, forcing stop")
+              srv.Stop()
+          }
+      }
+    hints:
+      - "signal.NotifyContext returns a context that is cancelled when the signal is received"
+      - "Run GracefulStop in a goroutine and use select with a timeout context to enforce the deadline"
+    key_concepts:
+      - "signal.NotifyContext"
+      - "GracefulStop"
+      - "Shutdown timeout"

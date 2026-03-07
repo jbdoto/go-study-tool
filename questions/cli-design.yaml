@@ -1,0 +1,107 @@
+chapter: cli-design
+title: "CLI Design"
+source_url: "https://pkg.go.dev/flag"
+questions:
+  - id: "cli-mc-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "How do you define a string flag using Go's flag package?"
+    correct: "flag.String(\"name\", \"default\", \"usage description\") which returns a *string"
+    wrong:
+      - "flag.Add(\"name\", \"default\", string) which registers a named flag"
+      - "flag.Register(\"--name\", \"default\", \"usage\") which adds a flag to the set"
+      - "flag.NewString(\"name\", \"default\", \"usage\") which creates a string flag"
+      - "os.Args.Flag(\"name\", \"default\") which extracts a flag from args"
+      - "flag.Define(\"name\", reflect.String, \"default\") using reflection for type"
+    explanation: "flag.String returns a pointer to a string that will hold the flag value after flag.Parse() is called."
+
+  - id: "cli-mc-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What must you call after defining flags to actually parse command-line arguments?"
+    correct: "flag.Parse()"
+    wrong:
+      - "flag.Run()"
+      - "flag.Process()"
+      - "flag.Read()"
+      - "flag.Execute()"
+      - "flag.Init()"
+    explanation: "flag.Parse() processes os.Args[1:] and populates all defined flag variables. It must be called before accessing flag values."
+
+  - id: "cli-mc-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "How do you implement subcommands (like 'git commit', 'git push') using the flag package?"
+    correct: "Create separate flag.FlagSet instances for each subcommand and parse based on os.Args[1]"
+    wrong:
+      - "Use flag.Subcommand(\"name\", handler) to register each subcommand with a handler"
+      - "Define flags with a slash separator like flag.String(\"commit/message\", ...) for nesting"
+      - "Call flag.Parse() multiple times, once per subcommand, to handle each set of flags"
+      - "Use flag.Group(\"name\") to create named flag groups that act as subcommands"
+      - "The flag package does not support subcommands; you must use a third-party library"
+    explanation: "flag.NewFlagSet creates an independent set of flags. You check os.Args[1] for the subcommand name, then call the appropriate FlagSet's Parse method on the remaining args."
+
+  - id: "cli-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "In the cobra library, what is the purpose of RunE in a Command struct?"
+    correct: "The function that executes when the command is run, returning an error"
+    wrong:
+      - "A function that validates the command's arguments before execution"
+      - "A function that runs cleanup after the command finishes"
+      - "A function that generates shell completion for the command"
+      - "A function that prints the command's help text"
+      - "A function that runs the command in an error-recovery mode"
+    explanation: "RunE is the error-returning variant of Run. It executes the command's main logic and returns an error that cobra can handle, typically resulting in a non-zero exit code."
+
+  - id: "cli-mc-5"
+    type: multiple_choice
+    difficulty: easy
+    text: "What exit code conventionally indicates successful execution of a CLI program?"
+    correct: "0"
+    wrong:
+      - "1"
+      - "-1"
+      - "200"
+      - "true"
+      - "nil"
+    explanation: "Exit code 0 means success. Non-zero codes indicate errors: 1 for general errors, 2 for usage errors. This convention is universal across Unix/Linux systems."
+
+  - id: "cli-mc-6"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does signal.NotifyContext do in Go?"
+    correct: "Returns a context that is cancelled when one of the specified OS signals is received"
+    wrong:
+      - "Sends a notification to a channel when the context is cancelled by any means"
+      - "Creates a context that logs all received OS signals for later inspection"
+      - "Blocks the current goroutine until a signal is received, then returns a context"
+      - "Registers a callback function that is invoked whenever a signal is received"
+      - "Forwards OS signals to child processes through the context propagation chain"
+    explanation: "signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM) returns a context that cancels on SIGINT or SIGTERM, perfect for graceful shutdown: select on ctx.Done() to clean up."
+
+  - id: "cli-mc-7"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the conventional use of stderr vs stdout in CLI programs?"
+    correct: "stdout for program output/data, stderr for errors, warnings, and diagnostic messages"
+    wrong:
+      - "stdout for text output, stderr for binary output or encoded data"
+      - "stdout for interactive mode output, stderr for batch mode output"
+      - "stdout for success messages only, stderr for all other message types"
+      - "They are interchangeable; the distinction is historical and no longer matters"
+      - "stdout for human-readable output, stderr for machine-readable structured output"
+    explanation: "Separating data (stdout) from diagnostics (stderr) allows piping program output while still seeing errors. For example: 'myapp | jq .' pipes JSON data while errors appear in the terminal."
+
+  - id: "cli-mc-8"
+    type: multiple_choice
+    difficulty: hard
+    text: "Which signals should a Go CLI program typically handle for graceful shutdown?"
+    correct: "SIGINT (Ctrl+C) and SIGTERM (sent by process managers like systemd)"
+    wrong:
+      - "SIGKILL and SIGSTOP (sent by the kernel for forced termination)"
+      - "SIGHUP and SIGPIPE (sent on terminal disconnect and broken pipes)"
+      - "SIGUSR1 and SIGUSR2 (user-defined signals for custom actions)"
+      - "SIGABRT and SIGQUIT (sent for abnormal termination with core dump)"
+      - "SIGCHLD and SIGALRM (sent for child process and timer events)"
+    explanation: "SIGINT (Ctrl+C from terminal) and SIGTERM (from kill command / orchestrators) are the standard graceful shutdown signals. SIGKILL cannot be caught and forces immediate termination."

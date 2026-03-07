@@ -1,0 +1,115 @@
+chapter: reflection
+title: "Reflection"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/reflection"
+questions:
+  - id: "refl-mc-1"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is reflection in Go?"
+    correct: "The ability of a program to examine its own structure and types at runtime"
+    wrong:
+      - "A compile-time code generation technique"
+      - "A way to mirror data between two structs"
+      - "A debugging tool built into the Go toolchain"
+      - "A pattern for implementing the observer pattern"
+      - "A method for deep-copying complex data structures"
+    explanation: "Reflection lets you inspect types and values at runtime, useful when you don't know the type at compile time."
+    source_anchor: "write-the-test-first"
+
+  - id: "refl-mc-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does reflect.ValueOf(x) return?"
+    correct: "A reflect.Value representing the runtime value of x"
+    wrong:
+      - "The type name of x as a string"
+      - "A pointer to x"
+      - "A copy of x as interface{}"
+      - "The memory address of x"
+      - "The size of x in bytes"
+    explanation: "reflect.ValueOf returns a Value struct that provides methods to inspect and manipulate the underlying value."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "refl-mc-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does val.Kind() return on a reflect.Value?"
+    correct: "The category of the type (e.g., reflect.String, reflect.Struct, reflect.Slice)"
+    wrong:
+      - "The name of the variable"
+      - "The package the type was defined in"
+      - "The size of the value in memory"
+      - "Whether the value is exported"
+      - "The interface the value satisfies"
+    explanation: "Kind tells you the broad category (String, Struct, Slice, Map, etc.) so you can handle each kind differently with a switch."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "refl-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "How do you dereference a pointer using the reflect package?"
+    correct: "Call val.Elem() on the reflect.Value"
+    wrong:
+      - "Use *val"
+      - "Call val.Pointer()"
+      - "Call val.Deref()"
+      - "Cast val to reflect.Pointer"
+      - "Call reflect.Indirect(val) only"
+    explanation: "val.Elem() returns the value that the pointer points to, similar to *ptr in regular Go code."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "refl-mc-5"
+    type: multiple_choice
+    difficulty: hard
+    text: "What types does the walk function in the chapter handle via reflect.Kind?"
+    correct: "String, Struct, Slice, Array, Map, Chan, Func, and Pointer"
+    wrong:
+      - "Only String and Struct"
+      - "All types including int, float, and bool"
+      - "String, Struct, Slice, and Map only"
+      - "Every type in the reflect package"
+      - "Only interface types"
+    explanation: "The chapter builds up the walk function incrementally, handling each Kind with a switch case and recursing into nested structures."
+    source_anchor: "wrapping-up"
+
+  - id: "refl-mc-6"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is the modern alias for interface{} in Go?"
+    correct: "any"
+    wrong:
+      - "object"
+      - "generic"
+      - "void"
+      - "auto"
+      - "dynamic"
+    explanation: "Since Go 1.18, 'any' is a built-in alias for interface{}. They are identical and interchangeable."
+    source_anchor: "write-the-test-first"
+
+  - id: "refl-mc-7"
+    type: multiple_choice
+    difficulty: hard
+    text: "How do you receive values from a channel using reflection?"
+    correct: "Call val.Recv() which returns the value and a boolean indicating if the channel is still open"
+    wrong:
+      - "Use <-val directly"
+      - "Call val.Read() which returns bytes"
+      - "Call val.Next() which returns the next value"
+      - "Call val.Chan().Get()"
+      - "Cast val to chan interface{} and use <-"
+    explanation: "val.Recv() mirrors the <-ch operation. It returns (reflect.Value, bool) where the bool is false when the channel is closed."
+    source_anchor: "wrapping-up"
+
+  - id: "refl-mc-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the chapter's advice about using reflection?"
+    correct: "Only use reflection if you really need to — prefer interfaces and type assertions"
+    wrong:
+      - "Use reflection everywhere for maximum flexibility"
+      - "Reflection is required for all generic code"
+      - "Avoid reflection entirely — it's deprecated"
+      - "Use reflection only in test code"
+      - "Reflection should replace all type switches"
+    explanation: "Reflection adds runtime complexity and loses compile-time safety. The chapter warns to use it sparingly and prefer static typing."
+    source_anchor: "wrapping-up"

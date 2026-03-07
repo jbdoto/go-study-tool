@@ -1,0 +1,220 @@
+challenge_set: grpc-testing
+title: "gRPC Testing"
+challenges:
+  - id: "grpc-test-1"
+    type: free_form
+    difficulty: medium
+    title: "Table-Driven gRPC Handler Test"
+    description: |
+      Write a table-driven test for a gRPC unary handler that fetches
+      a user by ID. Define test cases for: a valid user ID that returns
+      a user, an empty user ID that returns InvalidArgument, and a
+      non-existent user ID that returns NotFound. Use t.Run for subtests.
+    scaffold: |
+      package server
+
+      import (
+          "context"
+          "testing"
+
+          pb "example.com/api/proto"
+          "google.golang.org/grpc/codes"
+          "google.golang.org/grpc/status"
+      )
+
+      // Assume this handler is already implemented:
+      // func (s *Server) GetUser(ctx context.Context, req *pb.GetUserRequest) (*pb.User, error)
+
+      func TestGetUser(t *testing.T) {
+          srv := NewServer() // creates a server with test data
+
+          // TODO: Define a test case struct with fields:
+          //   name, userID, expectedCode, expectUser
+
+          // TODO: Create test cases for:
+          //   - "valid user" (ID: "user-1", expect OK, expect user)
+          //   - "empty ID" (ID: "", expect InvalidArgument)
+          //   - "not found" (ID: "missing", expect NotFound)
+
+          // TODO: Loop over test cases using t.Run for subtests
+          // Call srv.GetUser and check the status code and response
+      }
+    solution: |
+      package server
+
+      import (
+          "context"
+          "testing"
+
+          pb "example.com/api/proto"
+          "google.golang.org/grpc/codes"
+          "google.golang.org/grpc/status"
+      )
+
+      func TestGetUser(t *testing.T) {
+          srv := NewServer()
+
+          tests := []struct {
+              name         string
+              userID       string
+              expectedCode codes.Code
+              expectUser   bool
+          }{
+              {
+                  name:         "valid user",
+                  userID:       "user-1",
+                  expectedCode: codes.OK,
+                  expectUser:   true,
+              },
+              {
+                  name:         "empty ID",
+                  userID:       "",
+                  expectedCode: codes.InvalidArgument,
+                  expectUser:   false,
+              },
+              {
+                  name:         "not found",
+                  userID:       "missing",
+                  expectedCode: codes.NotFound,
+                  expectUser:   false,
+              },
+          }
+
+          for _, tt := range tests {
+              t.Run(tt.name, func(t *testing.T) {
+                  req := &pb.GetUserRequest{UserId: tt.userID}
+                  resp, err := srv.GetUser(context.Background(), req)
+
+                  if tt.expectedCode == codes.OK {
+                      if err != nil {
+                          t.Fatalf("expected no error, got %v", err)
+                      }
+                      if resp == nil {
+                          t.Fatal("expected user response, got nil")
+                      }
+                  } else {
+                      if err == nil {
+                          t.Fatalf("expected error with code %v, got nil", tt.expectedCode)
+                      }
+                      st, ok := status.FromError(err)
+                      if !ok {
+                          t.Fatalf("expected gRPC status error, got %v", err)
+                      }
+                      if st.Code() != tt.expectedCode {
+                          t.Errorf("expected code %v, got %v", tt.expectedCode, st.Code())
+                      }
+                  }
+              })
+          }
+      }
+    hints:
+      - "Define a struct with name, input, and expected fields, then range over a slice of them"
+      - "Use status.FromError to extract the gRPC status code from the error for assertions"
+    key_concepts:
+      - "Table-driven tests"
+      - "t.Run subtests"
+      - "Test helpers"
+
+  - id: "grpc-test-2"
+    type: free_form
+    difficulty: hard
+    title: "In-Process gRPC Test with bufconn"
+    description: |
+      Set up an in-process gRPC test server using bufconn. This avoids
+      opening real network ports during tests by using an in-memory
+      buffer as the transport. Create a bufconn listener, start a gRPC
+      server on it, register a service, and create a client connection
+      using a custom dialer.
+    scaffold: |
+      package server
+
+      import (
+          "context"
+          "net"
+          "testing"
+
+          pb "example.com/api/proto"
+          "google.golang.org/grpc"
+          "google.golang.org/grpc/credentials/insecure"
+          "google.golang.org/grpc/test/bufconn"
+      )
+
+      const bufSize = 1024 * 1024
+
+      func setupTestServer(t *testing.T) (pb.UserServiceClient, func()) {
+          t.Helper()
+
+          // TODO: Create a bufconn listener with bufSize
+
+          // TODO: Create a new gRPC server and register your service
+
+          // TODO: Start serving on the bufconn listener in a goroutine
+
+          // TODO: Create a client connection using grpc.DialContext with
+          // a custom dialer that uses the bufconn listener
+
+          // TODO: Create the service client from the connection
+
+          // TODO: Return the client and a cleanup function that stops
+          // the server and closes the connection
+      }
+    solution: |
+      package server
+
+      import (
+          "context"
+          "net"
+          "testing"
+
+          pb "example.com/api/proto"
+          "google.golang.org/grpc"
+          "google.golang.org/grpc/credentials/insecure"
+          "google.golang.org/grpc/test/bufconn"
+      )
+
+      const bufSize = 1024 * 1024
+
+      func setupTestServer(t *testing.T) (pb.UserServiceClient, func()) {
+          t.Helper()
+
+          lis := bufconn.Listen(bufSize)
+
+          srv := grpc.NewServer()
+          pb.RegisterUserServiceServer(srv, NewServer())
+
+          go func() {
+              if err := srv.Serve(lis); err != nil {
+                  t.Logf("server exited: %v", err)
+              }
+          }()
+
+          dialer := func(context.Context, string) (net.Conn, error) {
+              return lis.Dial()
+          }
+
+          conn, err := grpc.DialContext(
+              context.Background(),
+              "bufnet",
+              grpc.WithContextDialer(dialer),
+              grpc.WithTransportCredentials(insecure.NewCredentials()),
+          )
+          if err != nil {
+              t.Fatalf("failed to dial bufconn: %v", err)
+          }
+
+          client := pb.NewUserServiceClient(conn)
+
+          cleanup := func() {
+              conn.Close()
+              srv.GracefulStop()
+          }
+
+          return client, cleanup
+      }
+    hints:
+      - "bufconn.Listen creates an in-memory listener - use it with grpc.WithContextDialer"
+      - "The custom dialer function calls lis.Dial() to connect through the bufconn listener"
+    key_concepts:
+      - "bufconn.Listen"
+      - "In-process testing"
+      - "Custom dialer"

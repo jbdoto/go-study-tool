@@ -1,0 +1,133 @@
+chapter: grpc-fundamentals
+title: "gRPC Fundamentals"
+source_url: "https://grpc.io/docs/what-is-grpc/core-concepts/"
+questions:
+  - id: "grpc-fund-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does gRPC use as its default Interface Definition Language (IDL)?"
+    correct: "Protocol Buffers (protobuf)"
+    wrong:
+      - "JSON Schema"
+      - "Apache Thrift"
+      - "XML Schema Definition (XSD)"
+      - "OpenAPI / Swagger"
+      - "GraphQL SDL"
+    explanation: "gRPC uses Protocol Buffers by default to define service interfaces and message types in .proto files."
+
+  - id: "grpc-fund-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "Which transport protocol does gRPC use?"
+    correct: "HTTP/2"
+    wrong:
+      - "HTTP/1.1"
+      - "TCP with a custom framing protocol"
+      - "WebSocket"
+      - "QUIC (HTTP/3)"
+      - "UDP"
+    explanation: "gRPC is built on HTTP/2, which provides multiplexed streams, header compression, and bidirectional communication over a single connection."
+
+  - id: "grpc-fund-3"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is a unary RPC in gRPC?"
+    correct: "The client sends a single request and receives a single response"
+    wrong:
+      - "The client sends multiple requests and receives a single response"
+      - "The server streams multiple responses to one request"
+      - "Both client and server stream messages simultaneously"
+      - "The client sends a request with no response expected"
+      - "A fire-and-forget message pattern"
+    explanation: "Unary RPC is the simplest pattern: one request in, one response out, similar to a regular function call."
+
+  - id: "grpc-fund-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "Which gRPC streaming type allows the client to send a stream of messages and receive a single response?"
+    correct: "Client streaming"
+    wrong:
+      - "Server streaming"
+      - "Unary"
+      - "Bidirectional streaming"
+      - "Half-duplex streaming"
+      - "Multiplexed streaming"
+    explanation: "In client streaming, the client writes a sequence of messages and then waits for the server to read them and return a single response."
+
+  - id: "grpc-fund-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "In a .proto file, how do you define a service with an RPC method?"
+    correct: "Use the 'service' keyword with 'rpc' methods specifying request and response message types"
+    wrong:
+      - "Use the 'interface' keyword with function signatures and return types"
+      - "Use the 'endpoint' keyword with HTTP method annotations and path mappings"
+      - "Use the 'api' keyword with route definitions and handler references"
+      - "Use the 'contract' keyword with input/output message blocks"
+      - "Use JSON to define methods inside a 'routes' array with type references"
+    explanation: "Proto service definitions use 'service MyService { rpc MyMethod(Request) returns (Response); }' syntax to define RPCs."
+
+  - id: "grpc-fund-6"
+    type: multiple_choice
+    difficulty: medium
+    text: "What gRPC status code indicates that the requested entity was not found?"
+    correct: "NOT_FOUND"
+    wrong:
+      - "UNAVAILABLE"
+      - "UNKNOWN"
+      - "INVALID_ARGUMENT"
+      - "FAILED_PRECONDITION"
+      - "OUT_OF_RANGE"
+    explanation: "NOT_FOUND (code 5) means the requested resource does not exist. It maps conceptually to HTTP 404."
+
+  - id: "grpc-fund-7"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is gRPC metadata analogous to in HTTP?"
+    correct: "HTTP headers"
+    wrong:
+      - "HTTP request body"
+      - "URL query parameters"
+      - "HTTP cookies"
+      - "The HTTP method (GET, POST, etc.)"
+      - "The URL path"
+    explanation: "gRPC metadata is a set of key-value pairs sent alongside RPC calls, functioning like HTTP headers for carrying authentication tokens, trace IDs, etc."
+
+  - id: "grpc-fund-8"
+    type: multiple_choice
+    difficulty: hard
+    text: "What is the difference between a gRPC deadline and a timeout?"
+    correct: "A deadline is a fixed point in time, while a timeout is a duration from the start of the call"
+    wrong:
+      - "They are identical concepts with different names; gRPC uses them interchangeably"
+      - "A deadline is enforced server-side, while a timeout is enforced client-side only"
+      - "A timeout applies per-message in a stream, while a deadline covers the entire stream"
+      - "A deadline only applies to streaming RPCs, while timeouts apply to unary calls"
+      - "A timeout is enforced by the HTTP/2 transport layer, a deadline by application code"
+    explanation: "A deadline is an absolute time (e.g., 3:00:05 PM) while a timeout is relative (e.g., 5 seconds). gRPC internally converts timeouts to deadlines and propagates them across services."
+
+  - id: "grpc-fund-9"
+    type: multiple_choice
+    difficulty: hard
+    text: "What does the protoc compiler do with .proto files?"
+    correct: "Generates language-specific client and server code from the service and message definitions"
+    wrong:
+      - "Compiles them into a binary protocol format that is loaded at runtime"
+      - "Validates the definitions and produces a human-readable documentation site"
+      - "Converts the service and message definitions to OpenAPI specifications"
+      - "Starts a gRPC server directly from the service definitions without code"
+      - "Encrypts the proto definitions for secure transmission between services"
+    explanation: "protoc (with language-specific plugins) generates stubs, message types, and server interfaces in your target language from .proto files."
+
+  - id: "grpc-fund-10"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is a gRPC channel?"
+    correct: "A virtual connection to a gRPC endpoint that handles connection management and load balancing"
+    wrong:
+      - "A Go channel used to pass gRPC messages between goroutines in the client"
+      - "A message queue that buffers outgoing RPC requests before sending them"
+      - "A bidirectional stream within an RPC call for exchanging messages"
+      - "A logging pipeline for collecting and exporting gRPC diagnostic data"
+      - "A named pipe used for inter-process communication between gRPC services"
+    explanation: "A gRPC channel provides a connection to a server on a specified host and port. It handles name resolution, connection pooling, and load balancing transparently."

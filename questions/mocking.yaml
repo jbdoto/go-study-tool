@@ -1,0 +1,115 @@
+chapter: mocking
+title: "Mocking"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/mocking"
+questions:
+  - id: "mock-mc-1"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is a spy in the context of Go testing?"
+    correct: "A test double that records how it was called (arguments, call count, call order)"
+    wrong:
+      - "A tool that monitors goroutine execution"
+      - "A built-in Go testing feature"
+      - "A function that intercepts network requests"
+      - "A debugger that tracks variable changes"
+      - "A profiling tool for measuring test coverage"
+    explanation: "A spy records interactions like call count and argument values, letting you verify behavior rather than just output."
+    source_anchor: "write-the-test-first"
+
+  - id: "mock-mc-2"
+    type: multiple_choice
+    difficulty: medium
+    text: "In the countdown example, why is time.Sleep injected as a dependency rather than called directly?"
+    correct: "So tests can use a spy instead of actually sleeping, making them fast and verifiable"
+    wrong:
+      - "time.Sleep doesn't work in test files"
+      - "Go doesn't allow calling time.Sleep in non-main packages"
+      - "time.Sleep is deprecated"
+      - "Direct calls to time.Sleep cause data races"
+      - "time.Sleep requires root permissions"
+    explanation: "Injecting a Sleeper interface lets tests substitute a spy that records calls without actually waiting, making tests instant and behavior-verifiable."
+    source_anchor: "write-the-test-first"
+
+  - id: "mock-mc-3"
+    type: multiple_choice
+    difficulty: hard
+    text: "How does the chapter verify that Sleep is called between each Print, not just the right number of times?"
+    correct: "Using a combined spy that implements both io.Writer and Sleeper, recording the order of operations"
+    wrong:
+      - "By checking timestamps on each call to verify sleep durations between writes"
+      - "By using a mutex to enforce ordering and failing if calls arrive out of order"
+      - "By running the test multiple times with -race to detect ordering violations"
+      - "By adding separate sleep-count assertions in each subtest for verification"
+      - "By checking the output string includes timing data embedded between messages"
+    explanation: "A SpyCountdownOperations records both write and sleep calls in order to a []string, so you can assert the exact interleaved sequence."
+    source_anchor: "write-the-test-first"
+
+  - id: "mock-mc-4"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does fmt.Fprint do differently from fmt.Println?"
+    correct: "Fprint writes to an io.Writer parameter; Println always writes to os.Stdout"
+    wrong:
+      - "Fprint adds a newline; Println does not"
+      - "Fprint is for formatting; Println is for plain text"
+      - "Fprint returns an error; Println does not"
+      - "Fprint is deprecated in favor of Println"
+      - "Fprint only works with strings; Println works with any type"
+    explanation: "fmt.Fprint(w, ...) writes to any io.Writer, while fmt.Println(...) writes to os.Stdout with a trailing newline."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "mock-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is a ConfigurableSleeper as used in the chapter?"
+    correct: "A struct that accepts a duration and a sleep function, implementing the Sleeper interface"
+    wrong:
+      - "A built-in Go type for configuring sleep behavior in concurrent programs"
+      - "A mock that automatically generates randomized sleep durations for testing"
+      - "A wrapper around time.Sleep that adds logging and metrics collection"
+      - "A goroutine pool that manages multiple concurrent sleep timers efficiently"
+      - "A testing utility from the standard testing package for time-sensitive tests"
+    explanation: "ConfigurableSleeper stores a duration and a sleep function (e.g., time.Sleep), allowing both production use and test verification."
+    source_anchor: "wrapping-up"
+
+  - id: "mock-mc-6"
+    type: multiple_choice
+    difficulty: hard
+    text: "According to the chapter, what are warning signs that mocking is being overused?"
+    correct: "Tests require more than 3 mocks, or tests break during refactoring"
+    wrong:
+      - "The code has more than 5 functions"
+      - "The tests run in less than 1 second"
+      - "The mocks implement more than one interface"
+      - "The test file is longer than the source file"
+      - "The mocks use generics"
+    explanation: "Too many mocks suggest overly coupled code. Tests breaking during refactoring means you're testing implementation details rather than behavior."
+    source_anchor: "wrapping-up"
+
+  - id: "mock-mc-7"
+    type: multiple_choice
+    difficulty: easy
+    text: "What should tests verify according to the mocking chapter — behavior or implementation?"
+    correct: "Observable behavior (what it does), not implementation details (how it does it)"
+    wrong:
+      - "Implementation details to ensure correctness"
+      - "Both equally — there's no preference"
+      - "Only the return values, never side effects"
+      - "Only the function signatures"
+      - "The internal state of structs"
+    explanation: "Testing behavior means refactoring doesn't break tests. If you test how something works internally, any refactor requires test changes too."
+    source_anchor: "wrapping-up"
+
+  - id: "mock-mc-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does 'iterating in thin vertical slices' mean in the TDD context?"
+    correct: "Delivering small, complete, working increments of functionality backed by tests"
+    wrong:
+      - "Writing all tests first, then all implementation"
+      - "Splitting code into thin vertical files"
+      - "Testing each layer of the stack separately"
+      - "Writing tests only for the public API"
+      - "Implementing features from top to bottom without tests"
+    explanation: "Each slice is a tiny working feature. You resist the temptation to build everything at once, instead adding one tested behavior at a time."
+    source_anchor: "write-the-test-first"

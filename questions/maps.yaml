@@ -1,0 +1,115 @@
+chapter: maps
+title: "Maps"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/maps"
+questions:
+  - id: "map-mc-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "How do you declare and initialize an empty map in Go?"
+    correct: "map[string]string{} or make(map[string]string)"
+    wrong:
+      - "new(map[string]string)"
+      - "map{string: string}"
+      - "Map[string]string{}"
+      - "dict[string]string{}"
+      - "hashmap[string]string{}"
+    explanation: "Maps can be initialized with a literal (map[string]string{}) or with make(map[string]string). Both create a usable, non-nil map."
+    source_anchor: "refactor"
+
+  - id: "map-mc-2"
+    type: multiple_choice
+    difficulty: medium
+    text: "What happens if you write to a nil map in Go?"
+    correct: "It causes a runtime panic"
+    wrong:
+      - "It silently creates the map and inserts the value"
+      - "It returns an error"
+      - "It causes a compile error"
+      - "It stores the value but marks the map as invalid"
+      - "It ignores the write and continues"
+    explanation: "A nil map behaves like an empty map when reading (returns zero value), but writing to it panics. Always initialize maps before writing."
+    source_anchor: "write-the-test-first"
+
+  - id: "map-mc-3"
+    type: multiple_choice
+    difficulty: easy
+    text: "How do you check if a key exists in a Go map?"
+    correct: "Use the two-value form: value, ok := m[key]"
+    wrong:
+      - "Use m.contains(key)"
+      - "Use m.has(key)"
+      - "Use if m[key] != nil"
+      - "Use m.exists(key)"
+      - "Use _, err := m[key]"
+    explanation: "The second return value (ok) is a boolean indicating whether the key was found. This is called the 'comma ok' idiom."
+    source_anchor: "refactor"
+
+  - id: "map-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "How do you create constant errors in Go using a custom type?"
+    correct: "Define a string type that implements the error interface, then declare constants of that type"
+    wrong:
+      - "Use const err = errors.New(\"message\") to declare a constant error value"
+      - "Use the built-in ConstError type provided by the errors package"
+      - "Wrap errors.New calls in a const block to make them compile-time constants"
+      - "Use iota with a type that implements the error interface for enumerated errors"
+      - "Declare var err error = \"message\" which Go automatically converts to an error"
+    explanation: "type DictionaryErr string with an Error() method lets you use const for errors, since errors.New returns a pointer which can't be const."
+    source_anchor: "refactor-2"
+
+  - id: "map-mc-5"
+    type: multiple_choice
+    difficulty: easy
+    text: "How do you delete a key from a map in Go?"
+    correct: "delete(m, key)"
+    wrong:
+      - "m.delete(key)"
+      - "m.remove(key)"
+      - "del m[key]"
+      - "m[key] = nil"
+      - "unset(m, key)"
+    explanation: "The built-in delete function removes a key-value pair from a map. It does nothing if the key doesn't exist."
+    source_anchor: "write-the-test-first-3"
+
+  - id: "map-mc-6"
+    type: multiple_choice
+    difficulty: hard
+    text: "Why can maps be modified without pointer receivers in Go methods?"
+    correct: "Maps are internally reference types (backed by a runtime.hmap pointer), so copies still point to the same data"
+    wrong:
+      - "Go automatically converts value receivers to pointer receivers when the argument is a map"
+      - "Maps are immutable value types that create new copies on every write operation"
+      - "The compiler inlines all map operations so mutations are applied to the original"
+      - "Maps use copy-on-write semantics, deferring the actual copy until a write occurs"
+      - "Go passes all function arguments by reference, not just maps and slices"
+    explanation: "A map value is already a pointer to the underlying hash map structure. Passing it by value copies the pointer, not the data."
+    source_anchor: "refactor"
+
+  - id: "map-mc-7"
+    type: multiple_choice
+    difficulty: medium
+    text: "What constraint does Go place on map key types?"
+    correct: "Keys must be comparable (support == and != operators)"
+    wrong:
+      - "Keys must be strings"
+      - "Keys must implement the Hashable interface"
+      - "Keys must be primitive types"
+      - "Keys can be any type including slices"
+      - "Keys must implement the Stringer interface"
+    explanation: "Map keys must be comparable types. Slices, maps, and functions cannot be map keys because they don't support equality comparison."
+    source_anchor: "write-the-test-first"
+
+  - id: "map-mc-8"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does accessing a non-existent key in a Go map return?"
+    correct: "The zero value for the value type"
+    wrong:
+      - "nil"
+      - "An error"
+      - "A panic"
+      - "An empty string regardless of type"
+      - "undefined"
+    explanation: "Accessing a missing key returns the zero value (\"\" for strings, 0 for ints, etc.). Use the comma-ok idiom to distinguish missing keys from zero values."
+    source_anchor: "write-the-test-first"

@@ -1,0 +1,143 @@
+chapter: pointers-and-errors
+title: "Pointers & Errors"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/pointers-and-errors"
+questions:
+  - id: "ptr-mc-1"
+    type: multiple_choice
+    difficulty: medium
+    text: "Why does the Deposit method need a pointer receiver (*Wallet) instead of a value receiver (Wallet)?"
+    correct: "We need to modify the original struct's state, not a copy"
+    wrong:
+      - "Pointer receivers are always faster"
+      - "Go requires pointer receivers for all methods"
+      - "Value receivers cannot access struct fields"
+      - "Pointer receivers use less memory"
+      - "Value receivers cause compile errors with structs"
+    explanation: "A value receiver operates on a copy of the struct. To mutate the wallet's balance, we need a pointer to the original."
+    source_anchor: "pointers"
+
+  - id: "ptr-mc-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does the & operator do in Go?"
+    correct: "Returns the address of a variable"
+    wrong:
+      - "Dereferences a pointer"
+      - "Performs a bitwise AND"
+      - "Checks equality of two values"
+      - "Creates a new pointer type"
+      - "Copies a value to a new variable"
+    explanation: "The & operator returns the memory address (pointer) of a variable."
+    source_anchor: "pointers"
+
+  - id: "ptr-mc-3"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does the * operator do when used with a pointer type like *Wallet?"
+    correct: "Dereferences the pointer to access the underlying value"
+    wrong:
+      - "Multiplies two values"
+      - "Declares a new variable"
+      - "Creates a copy of the struct"
+      - "Returns the address of a variable"
+      - "Converts the pointer to a string"
+    explanation: "The * operator dereferences a pointer, giving you access to the value the pointer points to."
+    source_anchor: "pointers"
+
+  - id: "ptr-mc-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "In the chapter, why is Bitcoin defined as 'type Bitcoin int' rather than using int directly?"
+    correct: "It allows adding methods (like Stringer) and provides domain-specific meaning"
+    wrong:
+      - "It makes the code run faster"
+      - "Go requires custom types for all struct fields"
+      - "int cannot be used as a struct field"
+      - "It prevents integer overflow errors"
+      - "It makes the type immutable"
+    explanation: "Creating a named type lets you add methods like String() and gives the type semantic meaning in your domain."
+    source_anchor: "create-new-types-from-existing-ones"
+
+  - id: "ptr-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "How do you create a new error in Go using the standard library?"
+    correct: "errors.New(\"error message\")"
+    wrong:
+      - "throw(\"error message\")"
+      - "new Error(\"error message\")"
+      - "fmt.Error(\"error message\")"
+      - "panic(\"error message\")"
+      - "error.Create(\"error message\")"
+    explanation: "The errors.New function from the errors package creates a new error with the given message."
+    source_anchor: "errors"
+
+  - id: "ptr-mc-6"
+    type: multiple_choice
+    difficulty: hard
+    text: "Why does the chapter recommend defining errors as package-level variables (var ErrInsufficientFunds = errors.New(...))?"
+    correct: "It allows callers to check for specific error types rather than comparing error strings"
+    wrong:
+      - "Package-level variables are faster to access than locally created error values"
+      - "Go does not allow errors to be created inside functions, only at package level"
+      - "It prevents the garbage collector from collecting the error during request handling"
+      - "It makes errors immutable so they cannot be accidentally modified at runtime"
+      - "It reduces memory allocation during error handling by reusing a single instance"
+    explanation: "Extracting errors as variables lets callers use errors.Is() or == to check for specific errors, which is more robust than string comparison."
+    source_anchor: "unchecked-errors"
+
+  - id: "ptr-mc-7"
+    type: multiple_choice
+    difficulty: easy
+    text: "What interface does the String() method on Bitcoin satisfy?"
+    correct: "fmt.Stringer"
+    wrong:
+      - "error"
+      - "io.Writer"
+      - "io.Reader"
+      - "fmt.Formatter"
+      - "fmt.GoStringer"
+    explanation: "The fmt.Stringer interface requires a String() string method. Types implementing it get custom formatting in fmt functions."
+    source_anchor: "refactor"
+
+  - id: "ptr-mc-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "In the TDD cycle from this chapter, what is the correct order of steps?"
+    correct: "Write test, make it pass, refactor"
+    wrong:
+      - "Write code, write test, refactor"
+      - "Refactor, write test, write code"
+      - "Write test, refactor, then make it pass"
+      - "Plan, implement, test, deploy"
+      - "Write code, refactor, then write test"
+    explanation: "The TDD cycle is: Red (write a failing test), Green (make it pass with minimal code), Refactor (clean up while tests still pass)."
+    source_anchor: "wrapping-up"
+
+  - id: "ptr-mc-9"
+    type: multiple_choice
+    difficulty: hard
+    text: "What happens if you call a method with a pointer receiver on a value (not a pointer) in Go?"
+    correct: "Go automatically takes the address of the value"
+    wrong:
+      - "It causes a compile error"
+      - "The method receives a nil pointer"
+      - "It causes a runtime panic"
+      - "The value is implicitly copied to the heap"
+      - "The method runs but changes are lost"
+    explanation: "Go is helpful here: when you call a pointer-receiver method on a value, Go automatically takes the address (&value) for you. For example: `wallet := Wallet{balance: 0}` then `wallet.Deposit(50)` — even though Deposit has a pointer receiver `func (w *Wallet) Deposit(amount int)`, Go rewrites the call to `(&wallet).Deposit(50)` automatically. This only works when the value is addressable; calling a pointer-receiver method on a non-addressable value like a function return (`NewWallet().Deposit(50)`) won't compile."
+    source_anchor: "pointers"
+
+  - id: "ptr-mc-10"
+    type: multiple_choice
+    difficulty: medium
+    text: "How should errors be checked in Go test code according to the chapter's approach?"
+    correct: "Create a test helper that compares the error against an expected error value"
+    wrong:
+      - "Use try/catch blocks"
+      - "Compare error strings with string matching"
+      - "Ignore errors in tests since they're not production code"
+      - "Use assert.Equal from a third-party library"
+      - "Log the error and continue the test"
+    explanation: "The chapter creates an assertError helper that checks if the error matches an expected error variable, keeping tests readable and DRY."
+    source_anchor: "unchecked-errors"

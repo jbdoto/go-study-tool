@@ -1,0 +1,27 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Study Tool</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <style>
+        .correct { color: green; font-weight: bold; }
+        .incorrect { color: red; font-weight: bold; }
+        .explanation { margin-top: 0.5rem; padding: 0.75rem; background: var(--pico-muted-border-color); border-radius: 0.25rem; }
+        .question-block { margin-bottom: 2rem; padding: 1.5rem; border: 1px solid var(--pico-muted-border-color); border-radius: 0.5rem; }
+        .difficulty { font-size: 0.8rem; padding: 0.15rem 0.5rem; border-radius: 0.25rem; background: var(--pico-muted-border-color); }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <nav>
+            <ul><li><strong><a href="/">Go Study Tool</a></strong></li></ul>
+        </nav>
+        {{template "content" .}}
+    </main>
+</body>
+</html>
+{{end}}

@@ -1,0 +1,115 @@
+chapter: dependency-injection
+title: "Dependency Injection"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/dependency-injection"
+questions:
+  - id: "di-mc-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "What is dependency injection in simple terms?"
+    correct: "Passing dependencies into a function rather than hard-coding them"
+    wrong:
+      - "A framework for automatically creating objects"
+      - "A design pattern that requires a DI container"
+      - "A way to inject code at runtime using reflection"
+      - "A testing library for generating mock objects"
+      - "A technique for lazy-loading packages"
+    explanation: "The chapter describes DI as 'just a fancy word for passing in' dependencies. No framework needed — just pass interfaces as parameters."
+    source_anchor: "wrapping-up"
+
+  - id: "di-mc-2"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the io.Writer interface?"
+    correct: "An interface with a single Write(p []byte) (n int, err error) method"
+    wrong:
+      - "An interface for reading and writing files"
+      - "A struct that wraps os.Stdout"
+      - "An interface with Write, Read, and Close methods"
+      - "A concrete type for writing to buffers"
+      - "An interface with WriteString(s string) method"
+    explanation: "io.Writer has just one method: Write(p []byte) (n int, err error). Many types implement it: bytes.Buffer, os.Stdout, http.ResponseWriter, etc."
+    source_anchor: "write-the-test-first"
+
+  - id: "di-mc-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the difference between fmt.Printf and fmt.Fprintf?"
+    correct: "Fprintf takes an io.Writer as its first argument; Printf always writes to os.Stdout"
+    wrong:
+      - "Printf is for strings; Fprintf is for files"
+      - "Fprintf is faster than Printf"
+      - "Printf supports format verbs; Fprintf does not"
+      - "There is no difference; they are aliases"
+      - "Fprintf can only write to network connections"
+    explanation: "fmt.Fprintf(w, ...) writes to any io.Writer, while fmt.Printf(...) is shorthand for writing to os.Stdout."
+    source_anchor: "refactor"
+
+  - id: "di-mc-4"
+    type: multiple_choice
+    difficulty: easy
+    text: "What type is commonly used in tests to capture output from functions that accept io.Writer?"
+    correct: "bytes.Buffer"
+    wrong:
+      - "strings.Builder"
+      - "os.Pipe"
+      - "io.Discard"
+      - "bufio.Writer"
+      - "testing.Buffer"
+    explanation: "bytes.Buffer implements io.Writer and lets you capture written data, then read it back with .String() for assertions."
+    source_anchor: "write-the-test-first"
+
+  - id: "di-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "Why does accepting io.Writer make a function more reusable?"
+    correct: "The same function works with stdout, HTTP responses, files, buffers, and any other Writer"
+    wrong:
+      - "io.Writer is faster than writing to stdout directly because it uses buffered I/O"
+      - "io.Writer automatically handles character encoding and output format conversion"
+      - "Go requires all output functions to accept io.Writer as part of the language spec"
+      - "io.Writer provides built-in error handling and automatic retry on write failures"
+      - "io.Writer enables safe concurrent writes from multiple goroutines without locking"
+    explanation: "By depending on the io.Writer interface, your function works in CLI apps (os.Stdout), web servers (http.ResponseWriter), tests (bytes.Buffer), and more."
+    source_anchor: "wrapping-up"
+
+  - id: "di-mc-6"
+    type: multiple_choice
+    difficulty: easy
+    text: "Does os.Stdout implement io.Writer?"
+    correct: "Yes — os.Stdout is an *os.File which implements io.Writer"
+    wrong:
+      - "No — os.Stdout is a string"
+      - "No — os.Stdout only implements io.Reader"
+      - "Yes — but only in Go 1.18+"
+      - "No — you need to wrap it with bufio.NewWriter"
+      - "Yes — but it requires an explicit type conversion"
+    explanation: "*os.File implements io.Writer (and io.Reader), so os.Stdout can be passed anywhere an io.Writer is accepted."
+    source_anchor: "refactor"
+
+  - id: "di-mc-7"
+    type: multiple_choice
+    difficulty: hard
+    text: "What does http.ResponseWriter have in common with bytes.Buffer and os.Stdout?"
+    correct: "They all implement the io.Writer interface"
+    wrong:
+      - "They all implement the io.ReadWriter interface"
+      - "They are all part of the net/http package"
+      - "They all support concurrent writes"
+      - "They all buffer output before flushing"
+      - "They all implement the fmt.Stringer interface"
+    explanation: "All three implement io.Writer, which is why a single Greet(w io.Writer, name string) function can serve all three use cases."
+    source_anchor: "wrapping-up"
+
+  - id: "di-mc-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does the chapter recommend studying to find useful general-purpose interfaces?"
+    correct: "The Go standard library"
+    wrong:
+      - "Third-party DI frameworks"
+      - "The Go specification document"
+      - "GitHub trending Go repositories"
+      - "The Go blog"
+      - "Stack Overflow answers"
+    explanation: "The standard library is full of small, composable interfaces like io.Writer, io.Reader, and fmt.Stringer that enable powerful patterns."
+    source_anchor: "wrapping-up"

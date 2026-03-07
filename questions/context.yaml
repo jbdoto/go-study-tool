@@ -1,0 +1,115 @@
+chapter: context
+title: "Context"
+source_url: "https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/context"
+questions:
+  - id: "ctx-mc-1"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the primary purpose of context.Context in Go?"
+    correct: "Managing cancellation, timeouts, and request-scoped values across goroutines and call chains"
+    wrong:
+      - "Storing global application configuration that all packages can access"
+      - "Passing database connections and transaction handles between functions"
+      - "Logging request metadata and forwarding it to monitoring systems"
+      - "Managing goroutine lifecycle, scheduling, and priority across the runtime"
+      - "Providing a dependency injection container for services and repositories"
+    explanation: "Context carries deadlines, cancellation signals, and request-scoped values across API boundaries and goroutines."
+    source_anchor: "write-the-test-first"
+
+  - id: "ctx-mc-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "How do you get the context from an HTTP request?"
+    correct: "r.Context() where r is *http.Request"
+    wrong:
+      - "http.GetContext(r)"
+      - "context.FromRequest(r)"
+      - "r.GetContext()"
+      - "context.Background(r)"
+      - "r.Value(\"context\")"
+    explanation: "Every *http.Request carries a context accessible via r.Context(). The server cancels it when the client disconnects."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "ctx-mc-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does ctx.Done() return?"
+    correct: "A channel that is closed when the context is cancelled or times out"
+    wrong:
+      - "A boolean indicating if work is complete"
+      - "An error describing why the context ended"
+      - "The time remaining before the deadline"
+      - "A WaitGroup for pending goroutines"
+      - "nil if the context has no deadline"
+    explanation: "ctx.Done() returns a <-chan struct{} that closes on cancellation. Use it in a select to react to cancellation."
+    source_anchor: "write-enough-code-to-make-it-pass"
+
+  - id: "ctx-mc-4"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does context.Background() return?"
+    correct: "A non-nil, empty context typically used as the root context"
+    wrong:
+      - "A context that runs operations in background goroutines"
+      - "A context with a 30-second default timeout"
+      - "A context that is already cancelled"
+      - "A context that logs all derived contexts"
+      - "A thread-safe context for concurrent use"
+    explanation: "context.Background() is the top-level context. It's never cancelled and has no values — you derive specific contexts from it."
+    source_anchor: "write-the-test-first"
+
+  - id: "ctx-mc-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does context.WithCancel(parent) return?"
+    correct: "A derived context and a cancel function that, when called, cancels the context"
+    wrong:
+      - "A context that automatically cancels after 5 seconds"
+      - "A context and an error channel"
+      - "A context that cancels when the parent function returns"
+      - "Only a new context — cancellation is automatic"
+      - "A context and a boolean indicating if cancellation is supported"
+    explanation: "WithCancel returns (ctx, cancel). Calling cancel() closes ctx.Done(), signaling all listeners to stop work."
+    source_anchor: "write-the-test-first"
+
+  - id: "ctx-mc-6"
+    type: multiple_choice
+    difficulty: hard
+    text: "What does the chapter say about using context.Value?"
+    correct: "Use it only for request-scoped metadata (like trace IDs), not for passing required function parameters"
+    wrong:
+      - "Use it freely for passing any data between functions"
+      - "Never use it — it's deprecated"
+      - "Use it instead of function parameters for cleaner APIs"
+      - "Use it only for authentication tokens"
+      - "Use it as a replacement for global variables"
+    explanation: "The chapter warns: 'Context.Value should inform, not control.' Required inputs should be typed function parameters, not untyped context values."
+    source_anchor: "wrapping-up"
+
+  - id: "ctx-mc-7"
+    type: multiple_choice
+    difficulty: medium
+    text: "What is the convention for where context.Context appears in a function signature?"
+    correct: "As the first parameter"
+    wrong:
+      - "As the last parameter"
+      - "As a method receiver"
+      - "Embedded in a struct parameter"
+      - "As the second parameter after the writer"
+      - "It doesn't matter — there's no convention"
+    explanation: "Go convention is to pass context as the first parameter: func Fetch(ctx context.Context, ...). This is consistent across the standard library."
+    source_anchor: "write-the-test-first"
+
+  - id: "ctx-mc-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "What happens to a derived context when its parent context is cancelled?"
+    correct: "The derived context is also cancelled — cancellation propagates down"
+    wrong:
+      - "The derived context continues running independently"
+      - "The derived context gets a new parent context"
+      - "The derived context panics"
+      - "Only the parent is cancelled; children must be cancelled explicitly"
+      - "The derived context blocks until it finishes its work"
+    explanation: "Context cancellation cascades: cancelling a parent automatically cancels all contexts derived from it."
+    source_anchor: "write-enough-code-to-make-it-pass"
