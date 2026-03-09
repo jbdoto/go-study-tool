@@ -1,0 +1,117 @@
+{{define "content"}}
+<h1>Your Stats</h1>
+
+<div id="stats-content">
+    <p>Loading stats...</p>
+</div>
+
+<div style="margin-top: 2rem;">
+    <button onclick="if(confirm('Clear all stats?')){localStorage.removeItem('quizStats');location.reload();}" class="secondary outline">Reset Stats</button>
+    <a href="/" role="button" class="secondary" style="margin-left: 0.5rem;">Back to Home</a>
+</div>
+
+<script>
+(function() {
+    var stats = JSON.parse(localStorage.getItem('quizStats') || '{"overall":{"correct":0,"total":0},"chapters":{}}');
+    var container = document.getElementById('stats-content');
+    container.textContent = '';
+
+    if (stats.overall.total === 0) {
+        var p = document.createElement('p');
+        p.textContent = 'No answers recorded yet. Start a quiz to track your progress!';
+        container.appendChild(p);
+        return;
+    }
+
+    function createOverallCard(stats) {
+        var pct = Math.round((stats.overall.correct / stats.overall.total) * 100);
+        var article = document.createElement('article');
+
+        var header = document.createElement('header');
+        var strong = document.createElement('strong');
+        strong.textContent = 'Overall';
+        header.appendChild(strong);
+        article.appendChild(header);
+
+        var score = document.createElement('p');
+        score.style.fontSize = '2rem';
+        score.style.margin = '0';
+        score.textContent = pct + '%';
+        article.appendChild(score);
+
+        var detail = document.createElement('p');
+        detail.textContent = stats.overall.correct + ' correct out of ' + stats.overall.total + ' answered';
+        article.appendChild(detail);
+
+        var progress = document.createElement('progress');
+        progress.value = stats.overall.correct;
+        progress.max = stats.overall.total;
+        progress.style.width = '100%';
+        article.appendChild(progress);
+
+        return article;
+    }
+
+    function createChapterCard(slug, ch) {
+        var chPct = Math.round((ch.correct / ch.total) * 100);
+        var color = chPct >= 80 ? 'green' : chPct >= 50 ? 'orange' : 'red';
+
+        var article = document.createElement('article');
+
+        var header = document.createElement('header');
+        var strong = document.createElement('strong');
+        strong.textContent = ch.title;
+        header.appendChild(strong);
+        article.appendChild(header);
+
+        var score = document.createElement('p');
+        score.style.fontSize = '1.5rem';
+        score.style.margin = '0';
+        score.style.color = color;
+        score.textContent = chPct + '%';
+        article.appendChild(score);
+
+        var detail = document.createElement('p');
+        detail.textContent = ch.correct + ' / ' + ch.total;
+        article.appendChild(detail);
+
+        var progress = document.createElement('progress');
+        progress.value = ch.correct;
+        progress.max = ch.total;
+        progress.style.width = '100%';
+        article.appendChild(progress);
+
+        var footer = document.createElement('footer');
+        var link = document.createElement('a');
+        link.href = '/chapter/' + encodeURIComponent(slug);
+        link.textContent = 'Drill this chapter';
+        footer.appendChild(link);
+        article.appendChild(footer);
+
+        return article;
+    }
+
+    container.appendChild(createOverallCard(stats));
+
+    var slugs = Object.keys(stats.chapters).sort(function(a, b) {
+        return stats.chapters[a].title.localeCompare(stats.chapters[b].title);
+    });
+
+    if (slugs.length > 0) {
+        var h2 = document.createElement('h2');
+        h2.textContent = 'By Chapter';
+        container.appendChild(h2);
+
+        var grid = document.createElement('div');
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
+        grid.style.gap = '1rem';
+
+        for (var i = 0; i < slugs.length; i++) {
+            grid.appendChild(createChapterCard(slugs[i], stats.chapters[slugs[i]]));
+        }
+        container.appendChild(grid);
+    }
+})();
+</script>
+{{end}}

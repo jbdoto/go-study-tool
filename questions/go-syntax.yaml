@@ -1,0 +1,263 @@
+chapter: go-syntax
+title: "Go Syntax"
+source_url: "https://gobyexample.com/"
+questions:
+  - id: "gosyn-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "Which statement about Go variable declarations is correct?"
+    correct: "The := short declaration operator can only be used inside functions, not at the package level"
+    wrong:
+      - "The := short declaration operator can be used both at the package level and inside functions"
+      - "The := operator is simply an alias for var and they can be used interchangeably everywhere"
+      - "Variables declared with := must always have an explicit type annotation on the right side"
+      - "The := operator creates a constant rather than a variable when used with a literal value"
+      - "The := operator can only be used once per variable name in a given function scope"
+    explanation: "The := short declaration operator is syntactic sugar for declaring and initializing a variable, but it is only valid inside functions. At the package level, every statement must begin with a keyword (var, func, const, type, etc.)."
+
+  - id: "gosyn-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "Which statement about Go zero values is correct?"
+    correct: "An uninitialized string variable has the zero value of an empty string, not nil"
+    wrong:
+      - "An uninitialized string variable has the zero value of nil, just like slices and maps"
+      - "An uninitialized integer variable has the zero value of -1 to indicate it is unset"
+      - "An uninitialized boolean variable has the zero value of true by default in Go"
+      - "Go does not assign zero values automatically; uninitialized variables cause a compile error"
+      - "An uninitialized float64 variable has the zero value of NaN rather than 0.0"
+    explanation: "Go assigns zero values to all uninitialized variables: 0 for numeric types, false for booleans, and empty string for strings. Strings are not reference types in Go, so their zero value is an empty string, not nil."
+
+  - id: "gosyn-3"
+    type: multiple_choice
+    difficulty: medium
+    text: "Which statement about Go constants is correct?"
+    correct: "Numeric constants in Go have arbitrary precision until they are assigned to a typed variable"
+    wrong:
+      - "Constants in Go can be declared with any type, including slices, maps, and struct literals"
+      - "Constants in Go must always have an explicit type annotation; type inference does not apply"
+      - "Numeric constants in Go are always stored internally as float64 regardless of their declaration"
+      - "Constants declared at the package level are automatically exported to other packages"
+      - "Go constants can be modified at runtime if they are declared inside a function body"
+    explanation: "Go numeric constants are high-precision values. They can represent values that are much larger than what fits in any specific numeric type. A constant only takes on a fixed type when it is used in a context that requires one, such as assignment to a typed variable or as a function argument."
+
+  - id: "gosyn-4"
+    type: multiple_choice
+    difficulty: easy
+    text: "Which statement about Go loops is correct?"
+    correct: "The for keyword is Go's only looping construct; there is no while or do-while keyword"
+    wrong:
+      - "Go provides both for and while keywords, but while is syntactic sugar for a condition-only for"
+      - "Go has for, while, and loop keywords that each serve different looping use cases"
+      - "The for keyword in Go can only be used in the traditional C-style three-component form"
+      - "Go uses repeat as its infinite loop keyword, while for requires a termination condition"
+      - "The for keyword requires parentheses around the condition, just like C and Java"
+    explanation: "Go has a single looping construct: for. It supports multiple forms including C-style (init;cond;post), condition-only (like while in other languages), range-based iteration, and bare for with no condition for infinite loops."
+
+  - id: "gosyn-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "Which statement about Go's for-range loop is correct?"
+    correct: "When ranging over a slice, the loop provides both the index and a copy of the element at each iteration"
+    wrong:
+      - "When ranging over a slice, the loop provides only the element value with no way to access the index"
+      - "When ranging over a slice, the loop provides a pointer to each element rather than a copy of it"
+      - "When ranging over a map, the iteration order is guaranteed to be the insertion order of the keys"
+      - "The range keyword can only be used with slices and arrays, not with maps, strings, or channels"
+      - "When ranging over an integer n, the loop iterates from 1 through n inclusive rather than 0 to n-1"
+    explanation: "For-range over a slice yields (index, valueCopy) pairs. The value is a copy, not a reference to the original element. You can ignore the index with _ or omit the value. Ranging over an integer n (Go 1.22+) iterates from 0 to n-1."
+
+  - id: "gosyn-6"
+    type: multiple_choice
+    difficulty: easy
+    text: "Which statement about Go's if/else syntax is correct?"
+    correct: "Go does not have a ternary operator; conditional expressions must use full if/else blocks"
+    wrong:
+      - "Go supports the ternary operator using the syntax result := condition ? valueA : valueB"
+      - "Go's if statement requires parentheses around the condition, but the braces are optional"
+      - "Variables declared in an if statement's initializer are accessible outside the if/else block"
+      - "Go's if/else blocks do not require braces when the body is a single statement on one line"
+      - "Go supports pattern matching in if statements using the match keyword as an alternative"
+    explanation: "Go intentionally omits the ternary operator to keep code straightforward. If statements do not require parentheses around the condition but do require braces around the body. Variables declared in the if initializer (if x := f(); x > 0) are scoped to the if/else block only."
+
+  - id: "gosyn-7"
+    type: multiple_choice
+    difficulty: medium
+    text: "Which statement about Go's switch statement is correct?"
+    correct: "Switch cases in Go do not fall through by default; each case body breaks automatically"
+    wrong:
+      - "Switch cases in Go fall through to the next case by default, just like in C and Java"
+      - "Go's switch statement requires a break keyword at the end of every case to prevent fallthrough"
+      - "Go's switch can only match on integer and string types, not on booleans or custom types"
+      - "A switch case in Go can only contain a single value; multiple comma-separated values are not allowed"
+      - "Go's switch statement does not support a default case; you must handle all values explicitly"
+    explanation: "Unlike C and Java, Go switch cases do not fall through by default. Each case body implicitly breaks at the end. If you explicitly want fallthrough, you must use the fallthrough keyword. Cases can also list multiple values separated by commas."
+
+  - id: "gosyn-8"
+    type: multiple_choice
+    difficulty: medium
+    text: "Which statement about Go's type switch is correct?"
+    correct: "A type switch uses the syntax switch v := i.(type) to branch on the concrete type of an interface value"
+    wrong:
+      - "A type switch uses the reflect.TypeOf function inside a regular switch to branch on types"
+      - "A type switch uses the syntax switch typeof(i) to determine the concrete type of a variable"
+      - "Type switches in Go can only distinguish between built-in types, not user-defined types"
+      - "A type switch requires importing the reflect package to perform runtime type inspection"
+      - "Go does not support type switches; you must use a chain of if statements with type assertions"
+    explanation: "Go provides a special type switch syntax: switch v := i.(type) { case int: ... case string: ... }. This is built into the language and does not require the reflect package. It works with any interface value and can match both built-in and user-defined types."
+
+  - id: "gosyn-9"
+    type: multiple_choice
+    difficulty: medium
+    text: "Which statement about Go slices is correct?"
+    correct: "The append function may allocate a new underlying array if the existing one has insufficient capacity"
+    wrong:
+      - "Slices in Go are value types, so assigning a slice to another variable creates an independent copy"
+      - "The append function always modifies the original slice's underlying array without ever reallocating"
+      - "A slice created with make([]int, 5) has both a length and a capacity of zero until elements are added"
+      - "Slices cannot be created from existing arrays; they must always be created with make or a literal"
+      - "The built-in copy function returns an error if the destination slice is smaller than the source"
+    explanation: "Slices are reference types backed by an underlying array. When append is called and the capacity is exceeded, Go allocates a new, larger array and copies the data. The returned slice may point to a different array than the original, which is why you must capture the return value of append."
+
+  - id: "gosyn-10"
+    type: multiple_choice
+    difficulty: medium
+    text: "Which statement about Go maps is correct?"
+    correct: "Accessing a key that does not exist in a map returns the zero value for the value type, not a panic"
+    wrong:
+      - "Accessing a key that does not exist in a Go map causes a runtime panic with a key-not-found error"
+      - "Go maps maintain insertion order, so iterating over a map always returns keys in the order they were added"
+      - "Maps in Go are safe for concurrent read and write access from multiple goroutines without synchronization"
+      - "You can use a slice as a map key type because Go maps support any type as a key"
+      - "The delete function on a map returns the deleted value and a boolean indicating whether the key existed"
+    explanation: "Reading a missing key from a Go map returns the zero value of the value type. You can use the two-value form v, ok := m[key] to check existence. Maps do not maintain insertion order, are not safe for concurrent access, and only comparable types can be used as keys."
+
+  - id: "gosyn-11"
+    type: multiple_choice
+    difficulty: easy
+    text: "Which statement about Go functions is correct?"
+    correct: "Go functions can return multiple values, which is commonly used for returning a result and an error"
+    wrong:
+      - "Go functions can only return a single value; multiple returns require wrapping values in a struct"
+      - "Go functions support default parameter values that are used when the caller omits an argument"
+      - "Go functions support method overloading, allowing multiple functions with the same name but different signatures"
+      - "Go functions are not first-class values, so they cannot be assigned to variables or passed as arguments"
+      - "Go functions must declare their return type before the parameter list, as in int func add(a, b int)"
+    explanation: "Multiple return values are a core Go feature, commonly used for the (result, error) pattern. Go does not support default parameter values or function overloading. Functions are first-class values and can be assigned to variables, passed as arguments, and returned from other functions."
+
+  - id: "gosyn-12"
+    type: multiple_choice
+    difficulty: medium
+    text: "Which statement about Go variadic functions and closures is correct?"
+    correct: "A variadic parameter like nums ...int is received as a []int slice inside the function body"
+    wrong:
+      - "A variadic parameter like nums ...int is received as a fixed-size [...]int array inside the function body"
+      - "Closures in Go capture variables from the enclosing scope by value, creating an independent snapshot"
+      - "A variadic function can only accept up to 255 arguments due to Go's internal calling convention limit"
+      - "You cannot pass an existing slice to a variadic function; you must pass the elements individually"
+      - "Closures in Go cannot modify variables from the enclosing scope; captured variables are read-only"
+    explanation: "Variadic parameters are received as slices, not arrays. You can pass an existing slice to a variadic function using the ... syntax (e.g., sum(nums...)). Closures in Go capture variables by reference, meaning they can both read and modify variables from the enclosing scope."
+
+  - id: "gosyn-13"
+    type: multiple_choice
+    difficulty: medium
+    text: "Which statement about Go pointers is correct?"
+    correct: "Go does not support pointer arithmetic; you cannot increment or add offsets to a pointer"
+    wrong:
+      - "Go supports pointer arithmetic, allowing you to increment a pointer to traverse array elements"
+      - "The * operator is used to take the address of a variable, while & is used to dereference a pointer"
+      - "Pointers in Go have a zero value of 0, which is a valid memory address pointing to the zero page"
+      - "Go pointers can reference any memory address, including addresses from C libraries via cgo by default"
+      - "You cannot create a pointer to a struct field in Go; pointers can only reference entire variables"
+    explanation: "Go deliberately omits pointer arithmetic for safety. The & operator takes the address, * dereferences a pointer. Pointers have a zero value of nil, not 0. You can create pointers to struct fields, and accessing C memory requires explicit unsafe or cgo usage."
+
+  - id: "gosyn-14"
+    type: multiple_choice
+    difficulty: medium
+    text: "Which statement about Go struct methods is correct?"
+    correct: "A method with a pointer receiver can modify the struct's fields, while a value receiver works on a copy"
+    wrong:
+      - "Methods in Go can only have value receivers; pointer receivers are not supported by the language"
+      - "A method with a value receiver modifies the original struct because Go automatically passes by reference"
+      - "You must explicitly call methods on pointers using the -> operator, similar to C and C++"
+      - "Go struct methods must be defined inside the struct body, between the opening and closing braces"
+      - "A pointer receiver and a value receiver with the same method name can coexist on the same struct type"
+    explanation: "Pointer receivers get a reference to the struct and can modify it. Value receivers get a copy, so any modifications are lost after the method returns. Go automatically takes the address or dereferences as needed when calling methods, so there is no -> operator."
+
+  - id: "gosyn-15"
+    type: multiple_choice
+    difficulty: hard
+    text: "Which statement about Go struct embedding is correct?"
+    correct: "Embedding a type in a struct promotes its fields and methods, but this is composition, not inheritance"
+    wrong:
+      - "Embedding a type in a struct creates a true is-a inheritance relationship with polymorphic dispatch"
+      - "Embedded structs can access the private fields of the outer struct through the promoted relationship"
+      - "Go supports multiple levels of struct inheritance using the extends keyword with embedded types"
+      - "Embedding only promotes exported methods; unexported methods of the embedded type are never accessible"
+      - "An embedded type's methods receive a pointer to the outer struct as their receiver at runtime"
+    explanation: "Go uses composition through struct embedding, not classical inheritance. The embedded type's fields and methods are promoted to the outer struct, but the embedded type's methods still receive the embedded type as their receiver, not the outer struct. Both exported and unexported methods are promoted."
+
+  - id: "gosyn-16"
+    type: multiple_choice
+    difficulty: hard
+    text: "Which statement about Go interfaces is correct?"
+    correct: "Interfaces in Go are satisfied implicitly; a type implements an interface by having the required methods without declaring it"
+    wrong:
+      - "A type must explicitly declare that it implements an interface using the implements keyword"
+      - "The empty interface interface{} can only hold primitive types like int, string, and bool"
+      - "A type can implement at most one interface in Go to avoid the diamond problem from multiple inheritance"
+      - "Interface values in Go store only a pointer to the concrete value, never a copy of the value itself"
+      - "Interfaces can contain both method signatures and field declarations that implementing types must satisfy"
+    explanation: "Go interfaces are satisfied implicitly: if a type has all the methods an interface requires, it implements that interface automatically. The empty interface (interface{} or any) is satisfied by every type. Interfaces can only specify methods, not fields. Interface values store both a type descriptor and a value (which may be a copy or a pointer)."
+
+  - id: "gosyn-17"
+    type: multiple_choice
+    difficulty: hard
+    text: "Which statement about Go error handling is correct?"
+    correct: "Errors in Go are ordinary values that implement the error interface, which requires only an Error() string method"
+    wrong:
+      - "Go uses try-catch blocks for error handling, with errors thrown using the throw keyword"
+      - "The panic function is the standard way to signal errors in Go, and callers should use recover to handle them"
+      - "The error interface requires both an Error() string method and a Code() int method for error classification"
+      - "Go automatically propagates errors up the call stack like exceptions; explicit return is not necessary"
+      - "The errors.Is function compares errors by their string message rather than using the unwrap chain"
+    explanation: "Go treats errors as values, not exceptions. The error interface has a single method: Error() string. Errors are returned explicitly and must be checked by the caller. The errors.Is function traverses the unwrap chain to check if an error matches a target, comparing by identity, not by message string. Panic is reserved for truly exceptional situations."
+
+  - id: "gosyn-18"
+    type: multiple_choice
+    difficulty: hard
+    text: "Which statement about Go goroutines is correct?"
+    correct: "Goroutines are multiplexed onto a smaller number of OS threads by the Go runtime scheduler"
+    wrong:
+      - "Each goroutine maps directly to one OS thread, so creating 1000 goroutines creates 1000 threads"
+      - "Goroutines have a unique thread ID that you can retrieve using runtime.GoroutineID() for debugging"
+      - "Goroutines are scheduled cooperatively and will never be preempted by the Go runtime during execution"
+      - "The go keyword can be used with any expression, including go x + y to compute a sum concurrently"
+      - "Goroutines share no memory with other goroutines; all communication must happen through channels"
+    explanation: "Go uses M:N scheduling, multiplexing many goroutines onto fewer OS threads. There is no public GoroutineID function. Since Go 1.14, goroutines can be preempted asynchronously. The go keyword requires a function call. Goroutines do share memory, though channels are the recommended communication mechanism."
+
+  - id: "gosyn-19"
+    type: multiple_choice
+    difficulty: hard
+    text: "Which statement about Go's defer, panic, and recover is correct?"
+    correct: "Deferred function calls are executed in last-in, first-out order when the surrounding function returns"
+    wrong:
+      - "Deferred function calls are executed in first-in, first-out order when the surrounding code block exits"
+      - "The recover function can be called anywhere in a function to catch a panic, not just inside a defer"
+      - "When a panic occurs, no deferred functions run; the program immediately terminates with a stack trace"
+      - "Defer can only be used with named functions; anonymous functions and method calls cannot be deferred"
+      - "A deferred function's arguments are evaluated at the time the deferred function executes, not when defer is called"
+    explanation: "Deferred calls execute in LIFO (last-in, first-out) order when the enclosing function returns, not when the enclosing block ends. recover() only works when called directly inside a deferred function. Even during a panic, deferred functions still run. A deferred function's arguments are evaluated immediately when the defer statement is reached."
+
+  - id: "gosyn-20"
+    type: multiple_choice
+    difficulty: medium
+    text: "Which statement about Go enums and iota is correct?"
+    correct: "Go has no enum keyword; enumerations are created using const blocks with the iota identifier starting at 0"
+    wrong:
+      - "Go has a built-in enum keyword that creates a type-safe enumeration with automatic string representation"
+      - "The iota identifier starts at 1 and increments by 1 for each constant in a const block declaration"
+      - "The iota identifier can only be used with integer types and cannot be used in expressions or bit shifts"
+      - "Each const block in a Go file shares the same iota counter, incrementing across all const declarations"
+      - "Go's iota is reset to zero at the start of each new line within a const block, not at each new const block"
+    explanation: "Go uses const blocks with iota for enum-like patterns. iota starts at 0 and increments by 1 for each constant specification in a const block. It resets to 0 at each new const block. iota can be used in expressions (e.g., 1 << iota for bit flags) and works with any type, not just integers."

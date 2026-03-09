@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"go/parser"
+	"html/template"
 	"go/token"
 	"math/rand/v2"
 	"net/http"
@@ -67,7 +68,7 @@ func (s *Server) handleChallengeSolve(w http.ResponseWriter, r *http.Request) {
 		SetTitle     string
 		SetSlug      string
 		Challenge    challenges.CodeChallenge
-		ScaffoldJSON string
+		ScaffoldJSON template.JS
 		Index        int
 		Total        int
 		Order        string
@@ -76,7 +77,7 @@ func (s *Server) handleChallengeSolve(w http.ResponseWriter, r *http.Request) {
 		SetTitle:     cs.Title,
 		SetSlug:      cs.Slug,
 		Challenge:    *challenge,
-		ScaffoldJSON: string(scaffoldJSON),
+		ScaffoldJSON: template.JS(scaffoldJSON),
 		Index:        idx,
 		Total:        total,
 		Order:        order,

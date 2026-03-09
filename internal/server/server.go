@@ -21,7 +21,7 @@ func New(chapters []questions.Chapter, challengeSets []challenges.ChallengeSet, 
 		"add": func(a, b int) int { return a + b },
 	}
 
-	pages := []string{"index.html", "quiz.html", "done.html"}
+	pages := []string{"index.html", "quiz.html", "done.html", "stats.html"}
 	templates := make(map[string]*template.Template, len(pages))
 	for _, page := range pages {
 		t, err := template.New("").Funcs(funcMap).ParseFS(templateFS, "templates/layout.html", "templates/"+page)
@@ -70,6 +70,7 @@ func New(chapters []questions.Chapter, challengeSets []challenges.ChallengeSet, 
 func (s *Server) Routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", s.handleIndex)
+	mux.HandleFunc("GET /stats", s.handleStats)
 	mux.HandleFunc("GET /quiz/all", s.handleQuizAll)
 	mux.HandleFunc("POST /quiz/all/submit", s.handleSubmitAll)
 	mux.HandleFunc("GET /chapter/{name}", s.handleQuiz)

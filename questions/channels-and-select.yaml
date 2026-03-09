@@ -1,0 +1,198 @@
+chapter: channels-and-select
+title: "Channels & Select"
+source_url: "https://gobyexample.com/channels"
+questions:
+  - id: "chsel-1"
+    type: multiple_choice
+    difficulty: easy
+    text: "How do you create an unbuffered channel of type int in Go?"
+    correct: "ch := make(chan int)"
+    wrong:
+      - "ch := new(chan int)"
+      - "ch := chan int{}"
+      - "ch := create(chan int)"
+      - "var ch chan int"
+      - "ch := channel.New(int)"
+    explanation: "Channels are created with the built-in make function. `var ch chan int` declares a nil channel (zero value), which is different from an initialized unbuffered channel."
+
+  - id: "chsel-2"
+    type: multiple_choice
+    difficulty: easy
+    text: "What happens by default when you send a value on an unbuffered channel and no receiver is ready?"
+    correct: "The send blocks until a receiver is ready"
+    wrong:
+      - "The value is silently discarded"
+      - "The send returns an error value"
+      - "The runtime panics immediately"
+      - "The value is queued internally with no limit"
+      - "The goroutine is terminated by the scheduler"
+    explanation: "By default, sends and receives on unbuffered channels block until the other side is ready. This is what makes channels useful for synchronization between goroutines."
+
+  - id: "chsel-3"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does the syntax `v := <-ch` do?"
+    correct: "Receives a value from channel ch and assigns it to v"
+    wrong:
+      - "Sends the value of v into channel ch"
+      - "Checks if channel ch has a pending value"
+      - "Creates a new receive-only channel named v"
+      - "Compares v to the next value in channel ch"
+      - "Peeks at the next value without removing it"
+    explanation: "The arrow operator `<-` points left to indicate receiving from the channel on the right. `ch <- v` would be a send, while `v := <-ch` is a receive."
+
+  - id: "chsel-4"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does `make(chan string, 2)` create?"
+    correct: "A buffered channel of strings with capacity 2"
+    wrong:
+      - "Two unbuffered channels of strings returned as a slice"
+      - "A channel of strings that can only be used by 2 goroutines"
+      - "A channel of strings with a minimum send batch size of 2"
+      - "A channel that duplicates each string to 2 receivers"
+      - "A string channel with a 2-second timeout on operations"
+    explanation: "The second argument to make for channels specifies the buffer capacity. A buffered channel with capacity 2 can accept up to 2 sends without a corresponding receive before blocking."
+
+  - id: "chsel-5"
+    type: multiple_choice
+    difficulty: medium
+    text: "When does a send to a buffered channel block?"
+    correct: "When the buffer is completely full"
+    wrong:
+      - "When the buffer is more than half full"
+      - "When there are no active receivers on the channel"
+      - "When the garbage collector is running concurrently"
+      - "Buffered channel sends never block under any conditions"
+      - "When another goroutine is currently sending on the same channel"
+    explanation: "Buffered channels accept sends without blocking only up to the buffer capacity. Once the buffer is full, a send will block until a receiver drains at least one value."
+
+  - id: "chsel-6"
+    type: multiple_choice
+    difficulty: medium
+    text: "In a function signature, what does the parameter type `chan<- string` mean?"
+    correct: "A send-only channel that can only be used to send strings"
+    wrong:
+      - "A receive-only channel that can only receive strings"
+      - "A bidirectional channel with a string type constraint"
+      - "A channel that converts any type to a string on send"
+      - "A channel that broadcasts strings to multiple receivers"
+      - "A channel literal that holds a single string value"
+    explanation: "The arrow points into the channel keyword (`chan<-`), indicating values can only be sent into it. This is enforced at compile time. The reverse, `<-chan string`, is receive-only."
+
+  - id: "chsel-7"
+    type: multiple_choice
+    difficulty: medium
+    text: "What happens if you try to receive from a send-only channel (`chan<- int`)?"
+    correct: "The code fails to compile with a type error"
+    wrong:
+      - "The receive blocks forever and never returns"
+      - "The receive returns the zero value immediately"
+      - "The runtime panics with a direction violation error"
+      - "The receive succeeds but returns a nil interface value"
+      - "The receive triggers a deadlock detection at runtime"
+    explanation: "Channel direction restrictions are enforced at compile time, not runtime. The compiler will reject any attempt to receive from a send-only channel or send to a receive-only channel."
+
+  - id: "chsel-8"
+    type: multiple_choice
+    difficulty: easy
+    text: "What does the `select` statement do in Go?"
+    correct: "Waits on multiple channel operations and executes whichever case is ready first"
+    wrong:
+      - "Iterates over all cases sequentially from top to bottom"
+      - "Runs all ready channel operations concurrently in separate goroutines"
+      - "Polls channels in a round-robin order until one succeeds"
+      - "Selects a channel based on its buffer size and priority level"
+      - "Filters incoming channel values based on a predicate function"
+    explanation: "A select statement lets a goroutine wait on multiple communication operations. It blocks until one of its cases can proceed, then executes that case."
+
+  - id: "chsel-9"
+    type: multiple_choice
+    difficulty: medium
+    text: "If multiple cases in a `select` statement are ready simultaneously, what happens?"
+    correct: "One of the ready cases is chosen at random"
+    wrong:
+      - "The first case listed in source order is always chosen"
+      - "The last case listed in source order is always chosen"
+      - "All ready cases execute concurrently in goroutines"
+      - "The runtime panics due to ambiguous selection"
+      - "The case with the smallest channel buffer is chosen"
+    explanation: "When multiple cases are ready, Go's select picks one uniformly at random. This prevents starvation and ensures fairness among channel operations."
+
+  - id: "chsel-10"
+    type: multiple_choice
+    difficulty: medium
+    text: "How do you make a non-blocking receive from a channel using `select`?"
+    correct: "Use a `select` with the receive case and a `default` clause"
+    wrong:
+      - "Pass a false flag as the second argument to the receive operator"
+      - "Use the `tryReceive` built-in function on the channel"
+      - "Set the channel to non-blocking mode with `ch.SetBlocking(false)`"
+      - "Wrap the receive in a goroutine with a zero-length timer"
+      - "Call `reflect.Select` with a non-blocking parameter set to true"
+    explanation: "A select with a default clause is non-blocking: if no channel case is ready, the default executes immediately instead of blocking."
+
+  - id: "chsel-11"
+    type: multiple_choice
+    difficulty: hard
+    text: "What happens when you send a value to a closed channel?"
+    correct: "The runtime panics"
+    wrong:
+      - "The send silently succeeds but the value is discarded"
+      - "The send blocks forever waiting for a receiver"
+      - "The send returns false as a second return value"
+      - "The value is buffered and delivered when the channel reopens"
+      - "The send returns an error of type ChannelClosedError"
+    explanation: "Sending to a closed channel causes a panic. This is by design -- close signals that no more values will be sent, so attempting to send violates that contract."
+
+  - id: "chsel-12"
+    type: multiple_choice
+    difficulty: hard
+    text: "Given `j, more := <-ch` where ch is closed and empty, what are the values of j and more?"
+    correct: "j is the zero value for its type and more is false"
+    wrong:
+      - "j is the zero value for its type and more is true"
+      - "j is nil and more is false regardless of channel type"
+      - "The receive panics because the channel is closed"
+      - "j is undefined and more is an error value"
+      - "j is the last value sent before close and more is false"
+    explanation: "Receiving from a closed, empty channel returns the zero value immediately. The second value (more) is false, indicating the channel is closed and drained."
+
+  - id: "chsel-13"
+    type: multiple_choice
+    difficulty: medium
+    text: "What does `for elem := range ch` do?"
+    correct: "Iterates over values received from ch until the channel is closed and drained"
+    wrong:
+      - "Iterates over the current buffer contents without removing them"
+      - "Receives exactly one value from ch per loop iteration with a timeout"
+      - "Iterates indefinitely, returning zero values when the channel is empty"
+      - "Iterates over channel metadata like capacity, length, and direction"
+      - "Creates a snapshot of buffered values and iterates over the snapshot"
+    explanation: "Range over a channel receives values one at a time until the channel is closed and all buffered values have been delivered. If the channel is never closed, the loop blocks forever."
+
+  - id: "chsel-14"
+    type: multiple_choice
+    difficulty: hard
+    text: "What happens when you execute `select {}` (a select with no cases)?"
+    correct: "The goroutine blocks forever"
+    wrong:
+      - "The select returns immediately with no effect"
+      - "The runtime panics with a deadlock error instantly"
+      - "The compiler rejects it as a syntax error"
+      - "The goroutine is terminated by the garbage collector"
+      - "The select falls through to the next statement"
+    explanation: "An empty select statement with no cases blocks forever. This is sometimes used intentionally to keep the main goroutine alive while other goroutines do work."
+
+  - id: "chsel-15"
+    type: multiple_choice
+    difficulty: hard
+    text: "What happens when you send to or receive from a nil channel (declared with `var ch chan int` but never initialized)?"
+    correct: "Both send and receive block forever"
+    wrong:
+      - "Both send and receive panic immediately"
+      - "Send panics but receive returns the zero value"
+      - "Both send and receive return immediately with zero values"
+      - "The runtime initializes the channel automatically on first use"
+      - "Send succeeds silently but receive blocks forever"
+    explanation: "A nil channel is the zero value of a channel variable. Operations on a nil channel block forever -- sends never complete and receives never return. This property is useful in select statements to dynamically disable cases."

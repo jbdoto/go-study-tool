@@ -13,3 +13,17 @@
 {{else}}
 <a href="{{.NextURL}}" role="button" style="margin-top: 1rem;">Next Question</a>
 {{end}}
+<script>
+(function() {
+    var stats = JSON.parse(localStorage.getItem('quizStats') || '{"overall":{"correct":0,"total":0},"chapters":{}}');
+    stats.overall.total++;
+    {{if .Correct}}stats.overall.correct++;{{end}}
+    {{if .ChapterSlug}}
+    var ch = stats.chapters[{{.ChapterSlug}}] || {title: {{.ChapterTitle}}, correct: 0, total: 0};
+    ch.total++;
+    {{if .Correct}}ch.correct++;{{end}}
+    stats.chapters[{{.ChapterSlug}}] = ch;
+    {{end}}
+    localStorage.setItem('quizStats', JSON.stringify(stats));
+})();
+</script>

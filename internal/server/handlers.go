@@ -68,6 +68,10 @@ func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
 	s.templates["index.html"].ExecuteTemplate(w, "layout", data)
 }
 
+func (s *Server) handleStats(w http.ResponseWriter, r *http.Request) {
+	s.templates["stats.html"].ExecuteTemplate(w, "layout", nil)
+}
+
 func (s *Server) allQuestions() []questions.Question {
 	var all []questions.Question
 	for _, ch := range s.chapters {

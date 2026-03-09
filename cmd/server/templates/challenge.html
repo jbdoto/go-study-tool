@@ -18,21 +18,9 @@
     <div id="editor-container"></div>
 
     <div class="btn-group">
-        <button hx-post="/challenges/{{.SetSlug}}/check"
-                hx-target="#check-result"
-                hx-swap="innerHTML"
-                hx-vals="js:{code: window.editor ? window.editor.getValue() : ''}"
-                class="secondary">Check Syntax</button>
-        <button hx-post="/challenges/{{.SetSlug}}/hint"
-                hx-target="#hints"
-                hx-swap="beforeend"
-                hx-vals="js:{shown: document.querySelectorAll('.hint-box').length, challenge_id: '{{.Challenge.ID}}'}"
-                class="secondary outline">Show Hint</button>
-        <button hx-post="/challenges/{{.SetSlug}}/solution"
-                hx-target="#solution"
-                hx-swap="innerHTML"
-                hx-vals='{"challenge_id": "{{.Challenge.ID}}"}'
-                class="contrast outline">Show Solution</button>
+        <button onclick="checkSyntax()" class="secondary">Check Syntax</button>
+        <button onclick="showHint()" class="secondary outline">Show Hint</button>
+        <button onclick="showSolution()" class="contrast outline">Show Solution</button>
         {{if .IsLast}}
         <a href="/" role="button">Done</a>
         {{else}}
@@ -44,4 +32,37 @@
     <div id="hints"></div>
     <div id="solution"></div>
 </div>
+
+<script>
+function postAndRender(url, params, targetId, swap) {
+    fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: new URLSearchParams(params).toString()
+    })
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
+        var el = document.getElementById(targetId);
+        if (swap === 'beforeend') {
+            el.insertAdjacentHTML('beforeend', html);
+        } else {
+            el.innerHTML = html;
+        }
+    });
+}
+
+function checkSyntax() {
+    var code = window.editor ? window.editor.getValue() : '';
+    postAndRender('/challenges/{{.SetSlug}}/check', {code: code}, 'check-result', 'innerHTML');
+}
+
+function showHint() {
+    var shown = document.querySelectorAll('.hint-box').length;
+    postAndRender('/challenges/{{.SetSlug}}/hint', {shown: shown, challenge_id: '{{.Challenge.ID}}'}, 'hints', 'beforeend');
+}
+
+function showSolution() {
+    postAndRender('/challenges/{{.SetSlug}}/solution', {challenge_id: '{{.Challenge.ID}}'}, 'solution', 'innerHTML');
+}
+</script>
 {{end}}
